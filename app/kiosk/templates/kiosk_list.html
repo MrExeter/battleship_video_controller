@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h4>Video Kiosks</h4>
+        <hr>
+        <br>
+        {% for kiosk in kiosks %}
+
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <th>Id</th>
+                    <th>IP Address</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+
+                {% for kiosk in kiosks %}
+                    <tr>
+                        <td>{{ kiosk.id }}</td>
+                        <td>{{ kiosk.network_address }}</td>
+                        <td>{{ kiosk.location }}</td>
+                        <td>Status</td>
+                        <td>
+                            <a href="{{ url_for('main.kiosk_detail', kiosk_id=kiosk.id)}}" class="btn btn-success">
+                                View
+                            </a>
+
+                            <a href="{{ url_for('main.edit_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-group-sm btn-info">
+                                Edit
+                            </a>
+
+                            <button href="" class="btn btn-group-sm btn-danger">
+                                Delete
+                            </button>
+
+
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </table>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

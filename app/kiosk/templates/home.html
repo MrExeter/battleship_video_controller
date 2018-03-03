@@ -2,5 +2,16 @@
 
 {% block content %}
 
+    <div class="container">
+
+    <h4 style="margin-left: 45px">Video Kiosks</h4>
+
+        {% for kiosk in kiosks %}
+
+            <p>{{ kiosk.network_address }}</p>
+            <p>{{ kiosk.location }}</p>
+        {% endfor %}
+
+    </div>
 
 {% endblock %}

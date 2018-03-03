@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h4>Video Kiosk {{ kiosk.id }}</h4>
+        <hr>
+        <br>
+
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+                <td>Network Address : </td>
+                <td>{{ kiosk.network_address }}</td>
+            </tr>
+            <tr>
+                <td>Location : </td>
+                <td>{{ kiosk.location }}</td>
+            </tr>
+            <tr>
+                <td>Status : </td>
+                <td>Status</td>
+            </tr>
+            <tr>
+                <td>Uptime : </td>
+                <td>uptime</td>
+            </tr>
+        </table>
+
+    </div>
+
+
+{% endblock %}

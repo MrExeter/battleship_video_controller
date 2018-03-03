@@ -1,4 +1,9 @@
-
+'''
+Description - Main and Kiosk routes
+@author - John Sentz
+@date - 01-Mar-2018
+@time - 8:25 PM
+'''
 
 
 from flask import render_template, flash, request, redirect, url_for
@@ -11,11 +16,25 @@ from app.kiosk.forms import CreateKioskForm, EditKioskForm
 
 
 @main.route('/')
+@login_required
 def display_kiosks():
 
     kiosks = Kiosk.query.all()
-    return render_template('home.html', kiosk=kiosks)
+    return render_template('home.html', kiosks=kiosks)
 
+
+@main.route('/kiosks')
+@login_required
+def kiosk_list():
+    kiosks = Kiosk.query.all()
+    return render_template('kiosk_list.html', kiosks=kiosks)
+
+
+@main.route('/kiosk/detail/<kiosk_id>')
+@login_required
+def kiosk_detail(kiosk_id):
+    kiosk = Kiosk.query.get(kiosk_id)
+    return render_template('kiosk_detail.html', kiosk=kiosk)
 
 
 @main.route('/kiosk/delete/<kiosk_id>', methods=['GET', 'POST'])
