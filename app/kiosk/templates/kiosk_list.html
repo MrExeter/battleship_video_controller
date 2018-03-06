@@ -7,7 +7,6 @@
         <h4>Video Kiosks</h4>
         <hr>
         <br>
-        {% for kiosk in kiosks %}
 
             <table class="table table-bordered table-striped table-hover">
                 <tr>
@@ -33,9 +32,9 @@
                                 Edit
                             </a>
 
-                            <button href="" class="btn btn-group-sm btn-danger">
+                            <a href="{{ url_for('main.delete_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-group-sm btn-danger">
                                 Delete
-                            </button>
+                            </a>
 
 
                         </td>
@@ -44,7 +43,6 @@
                 {% endfor %}
 
             </table>
-        {% endfor %}
 
     </div>
 

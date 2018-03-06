@@ -6,7 +6,7 @@ Description - Main and Kiosk routes
 '''
 
 
-from flask import render_template, flash, request, redirect, url_for
+from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 
 from app import db
@@ -46,7 +46,7 @@ def delete_kiosk(kiosk_id):
         db.session.delete(kiosk)
         db.session.commit()
         flash('kiosk deleted successfully')
-        return redirect(url_for('main.display_kiosks'))
+        return redirect(url_for('main.kiosk_list'))
 
     return render_template('delete_kiosk.html', kiosk=kiosk, kiosk_id=kiosk_id)
 
@@ -55,6 +55,8 @@ def delete_kiosk(kiosk_id):
 @login_required
 def edit_kiosk(kiosk_id):
     kiosk = Kiosk.query.get(kiosk_id)
+
+    session["current_address"] = kiosk.network_address  # temp store kiosk ip address in session
     form = EditKioskForm(obj=kiosk)
 
     if form.validate_on_submit():
@@ -63,7 +65,7 @@ def edit_kiosk(kiosk_id):
         db.session.add(kiosk)
         db.session.commit()
         flash('Kiosk updated successfully')
-        return redirect(url_for('main.display_kiosks'))
+        return redirect(url_for('main.kiosk_list'))
 
     return render_template('edit_kiosk.html', form=form)
 
@@ -75,14 +77,12 @@ def create_kiosk():
     form = CreateKioskForm()
 
     if form.validate_on_submit():
-        kiosk = Kiosk(network_address=form.network_address.data,
-                      location=form.location.data)
 
-        db.session.add(kiosk)
-        db.session.commit()
-        flash('Kiosk added successfully')
+        Kiosk.create_kiosk(
+            network_address=form.network_address.data,
+            location=form.location.data
+        )
+        flash('Registration Successful')
+        return redirect(url_for('main.kiosk_list'))
 
-        return redirect(url_for('main.display_kiosks'))
     return render_template('create_kiosk.html', form=form)
-
-

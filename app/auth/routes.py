@@ -18,7 +18,7 @@ def register_user():
     form = RegistrationForm()
     if current_user.is_authenticated:
         flash('you are already logged-in')
-        return redirect(url_for('main.display_kiosks'))
+        return redirect(url_for('main.kiosk_list'))
 
     if form.validate_on_submit():
         User.create_user(
@@ -35,7 +35,7 @@ def register_user():
 def do_the_login():
     if current_user.is_authenticated:
         flash('you are already logged-in')
-        return redirect(url_for('main.display_kiosks'))
+        return redirect(url_for('main.kiosk_list'))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -45,7 +45,7 @@ def do_the_login():
             return redirect(url_for('authentication.do_the_login'))
 
         login_user(user, form.stay_loggedin.data)
-        return redirect(url_for('main.display_kiosks'))
+        return redirect(url_for('main.kiosk_list'))
 
     return render_template('login.html', form=form)
 
@@ -55,7 +55,7 @@ def do_the_login():
 def log_out_user():
     logout_user()
     flash('Logged out Successfully')
-    return redirect(url_for('main.display_kiosks'))
+    return redirect(url_for('authentication.do_the_login'))
 
 
 @at.app_errorhandler(404)

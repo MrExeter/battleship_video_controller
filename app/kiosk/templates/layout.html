@@ -28,7 +28,8 @@
                             <ul class="nav navbar-nav pull-right">
 
                                     {% if current_user.is_authenticated %}
-                                        <li><a href=""> Home </a></li>
+                                        <li><a href="{{ url_for('main.kiosk_list') }}"> Kiosks </a></li>
+                                        <li><a href="{{ url_for('main.create_kiosk') }}">Create Kiosk</a></li>
                                         <li><a href="{{ url_for('authentication.log_out_user') }}">Sign Out</a></li>
                                     {% else %}
                                         <li><a href="{{ url_for('authentication.register_user') }}"> Register </a></li>
