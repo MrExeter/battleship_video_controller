@@ -4,10 +4,12 @@ Description - Main and Kiosk routes
 @date - 01-Mar-2018
 @time - 8:25 PM
 '''
+import urllib
 
-
-from flask import render_template, flash, request, redirect, url_for, session
+import requests
+from flask import render_template, flash, request, redirect, url_for, session, json, jsonify
 from flask_login import login_required
+from requests import ConnectionError
 
 from app import db
 from app.kiosk import main
@@ -16,11 +18,8 @@ from app.kiosk.forms import CreateKioskForm, EditKioskForm
 
 
 @main.route('/')
-@login_required
 def display_kiosks():
-
-    kiosks = Kiosk.query.all()
-    return render_template('home.html', kiosks=kiosks)
+    return redirect(url_for('authentication.do_the_login'))
 
 
 @main.route('/kiosks')
@@ -86,3 +85,22 @@ def create_kiosk():
         return redirect(url_for('main.kiosk_list'))
 
     return render_template('create_kiosk.html', form=form)
+
+
+@main.route('/kiosk/status/<kiosk_id>', methods=['GET', 'POST'])
+# @login_required
+def get_kiosk_status(kiosk_id):
+
+    kiosk = Kiosk.query.get(kiosk_id)
+    network_address = kiosk.network_address
+    url = "http://" + network_address + ":5000/system_stats"
+    try:
+        r = requests.get(url)
+        json_content = r.json.im_self.content
+        data = json_content
+    except:
+        data = {"Connection Error": "Cannot connect to Kiosk at address: {}".format(kiosk.network_address)}
+        return jsonify(data)
+
+    return data
+
