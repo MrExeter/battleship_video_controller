@@ -41,4 +41,3 @@ class LoginForm(FlaskForm):
     stay_loggedin = BooleanField('stay logged-in')
     submit = SubmitField('Login')
 
-

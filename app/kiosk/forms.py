@@ -14,15 +14,26 @@ import re
 from app.kiosk.models import Kiosk
 
 
-def network_address_exists(form, field):
+def edit_network_address_exists(form, field):
     # Check to see if IP address is already being used
     temp_address = session["current_address"]   # Retrieve session variable for kiosk ip address
     kiosk = Kiosk.query.filter_by(network_address=field.data).first()
-    network_address = kiosk.network_address
 
+    if not kiosk:
+        return True
+
+    network_address = kiosk.network_address
     if network_address == temp_address:
         session["current_address"] = ''
         return True
+
+    if kiosk:
+        raise ValidationError('IP address already in use')
+
+
+def network_address_exists(form, field):
+    # Check to see if IP address is already being used
+    kiosk = Kiosk.query.filter_by(network_address=field.data).first()
 
     if kiosk:
         raise ValidationError('IP address already in use')
@@ -47,7 +58,7 @@ class CreateKioskForm(FlaskForm):
 
 class EditKioskForm(FlaskForm):
     network_address = StringField('Network Address', validators=[DataRequired(),
-                                                                 network_address_exists,
+                                                                 edit_network_address_exists,
                                                                  network_address_valid])
 
     location = StringField('Location', validators=[DataRequired()])

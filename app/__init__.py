@@ -5,17 +5,23 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 
+from flask_wtf.csrf import CSRFProtect
+
 db = SQLAlchemy()
 bootstrap = Bootstrap()
 login_manager = LoginManager()
 login_manager.login_view = 'authentication.do_the_login'
 login_manager.session_protection = 'strong'
 bcrypt = Bcrypt()
+csrf = CSRFProtect()
 
 
 def create_app(config_type):
     app = Flask(__name__)
     configuration = os.path.join(os.getcwd(), 'config', config_type + '.py')
+
+    # app.config['WTF_CSRF_SECRET_KEY'] = 'thisissecret'
+    # csrf.init_app(app)
 
     app.config.from_pyfile(configuration)
 

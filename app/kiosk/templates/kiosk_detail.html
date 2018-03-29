@@ -1,31 +1,71 @@
 {% extends 'layout.html' %}
-
 {% block content %}
+    <meta http-equiv="refresh" content="5; URL=http://127.0.0.1:5000/kiosk/detail/{{ kiosk.id }}">
 
     <div class="container">
 
-        <h4>Video Kiosk {{ kiosk.id }}</h4>
+        <h4>Video Kiosk {{ kiosk.id }} @ {{ kiosk.network_address }}</h4>
         <hr>
         <br>
 
-        <table class="table table-bordered table-striped table-hover">
-            <tr>
-                <td>Network Address : </td>
-                <td>{{ kiosk.network_address }}</td>
-            </tr>
-            <tr>
-                <td>Location : </td>
-                <td>{{ kiosk.location }}</td>
-            </tr>
-            <tr>
-                <td>Status : </td>
-                <td>Status</td>
-            </tr>
-            <tr>
-                <td>Uptime : </td>
-                <td>uptime</td>
-            </tr>
-        </table>
+        {% if not status.Connection_Error %}
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <td>Network Address : </td>
+                    <td>{{ kiosk.network_address }}</td>
+                </tr>
+                <tr>
+                    <td>Location : </td>
+                    <td>{{ kiosk.location }}</td>
+                </tr>
+    {#            <tr>#}
+    {#                <td>Status : </td>#}
+    {#                <td>Status</td>#}
+    {#            </tr>#}
+    {#            <tr>#}
+    {#                <td>RAW</td>#}
+    {#                <td>{{ status }}</td>#}
+    {#            </tr>#}
+                <tr>
+                    <td>CPU Temp:</td>
+                    <td>{{ status.cpu_temp }} C</td>
+                </tr>
+                <tr>
+                    <td>CPU Utilization:</td>
+                    <td>{{ status.cpu_utilization }}</td>
+                </tr>
+                <tr>
+                    <td>Uptime : </td>
+                    <td>{{ status.uptime.days }} Days, {{ status.uptime.hours }} Hours, {{ status.uptime.minutes }} min</td>
+                </tr>
+                <tr>
+                    <td>Memory Total:</td>
+                    <td>{{ status.memory_stats.memory_total }}</td>
+                </tr>
+                <tr>
+                    <td>Memory Free:</td>
+                    <td>{{ status.memory_stats.memory_available }}</td>
+                </tr>
+                <tr>
+                    <td>Memory Utilization:</td>
+                    <td>{{ status.memory_stats.memory_used_percent }}</td>
+                </tr>
+                <tr>
+                    <td>Disk Total:</td>
+                    <td>{{ status.disk_stats.disk_total }}</td>
+                </tr>
+                <tr>
+                    <td>Disk Free</td>
+                    <td>{{ status.disk_stats.disk_free }}</td>
+                </tr>
+                <tr>
+                    <td>Disk Utilization:</td>
+                    <td>{{ status.disk_stats.disk_used_percent }}</td>
+                </tr>
+            </table>
+        {% else %}
+            <h4>Connection Error, No data retrieved</h4>
+        {% endif %}
 
     </div>
 

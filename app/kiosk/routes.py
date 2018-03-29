@@ -4,17 +4,16 @@ Description - Main and Kiosk routes
 @date - 01-Mar-2018
 @time - 8:25 PM
 '''
-import urllib
 
 import requests
-from flask import render_template, flash, request, redirect, url_for, session, json, jsonify
+from flask import render_template, flash, request, redirect, url_for, session, jsonify, json
 from flask_login import login_required
-from requests import ConnectionError
+import ast
 
 from app import db
 from app.kiosk import main
-from app.kiosk.models import Kiosk
 from app.kiosk.forms import CreateKioskForm, EditKioskForm
+from app.kiosk.models import Kiosk
 
 
 @main.route('/')
@@ -33,7 +32,10 @@ def kiosk_list():
 @login_required
 def kiosk_detail(kiosk_id):
     kiosk = Kiosk.query.get(kiosk_id)
-    return render_template('kiosk_detail.html', kiosk=kiosk)
+
+    status = get_kiosk_status(kiosk_id)
+    status = ast.literal_eval(status)
+    return render_template('kiosk_detail.html', kiosk=kiosk, status=status)
 
 
 @main.route('/kiosk/delete/<kiosk_id>', methods=['GET', 'POST'])
@@ -72,7 +74,7 @@ def edit_kiosk(kiosk_id):
 @main.route('/create/kiosk', methods=['GET', 'POST'])
 @login_required
 def create_kiosk():
-
+    session["current_address"] = ''
     form = CreateKioskForm()
 
     if form.validate_on_submit():
@@ -95,12 +97,12 @@ def get_kiosk_status(kiosk_id):
     network_address = kiosk.network_address
     url = "http://" + network_address + ":5000/system_stats"
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=3)
         json_content = r.json.im_self.content
         data = json_content
     except:
-        data = {"Connection Error": "Cannot connect to Kiosk at address: {}".format(kiosk.network_address)}
-        return jsonify(data)
+        data = {"Connection_Error": "Cannot connect to Kiosk at address - {}".format(kiosk.network_address)}
+        return str(data)
 
     return data
 

@@ -5,10 +5,11 @@ Description - Authorization Routes
 @time - 1:56 PM
 '''
 
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required, current_user
-from app.auth.forms import RegistrationForm, LoginForm
+
 from app.auth import authentication as at
+from app.auth.forms import RegistrationForm, LoginForm
 from app.auth.models import User
 
 
@@ -48,6 +49,14 @@ def do_the_login():
         return redirect(url_for('main.kiosk_list'))
 
     return render_template('login.html', form=form)
+
+#
+# @at.before_request
+# def csrf_protect():
+#     if request.method == "POST":
+#         token = session.pop('_csrf_token', None)
+#         if not token or token != request.form.get('_csrf_token'):
+#             abort(403)
 
 
 @at.route('/logout')
