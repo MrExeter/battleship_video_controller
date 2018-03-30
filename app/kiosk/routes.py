@@ -95,7 +95,7 @@ def get_kiosk_status(kiosk_id):
 
     kiosk = Kiosk.query.get(kiosk_id)
     network_address = kiosk.network_address
-    url = "http://" + network_address + ":5000/system_stats"
+    url = "http://" + network_address + ":5100/system_stats"
     try:
         r = requests.get(url, timeout=3)
         json_content = r.json.im_self.content
