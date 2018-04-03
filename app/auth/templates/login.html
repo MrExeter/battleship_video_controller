@@ -9,8 +9,12 @@
         <hr>
         <br>
         {{ form.hidden_tag() }}
-{#        {{ form.csrf_token }}#}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+
         {{ wtf.quick_form(form) }}
     </div>
+
+    {{ csrf_token() }}
 
 {% endblock %}

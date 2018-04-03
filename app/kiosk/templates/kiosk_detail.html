@@ -18,14 +18,7 @@
                     <td>Location : </td>
                     <td>{{ kiosk.location }}</td>
                 </tr>
-    {#            <tr>#}
-    {#                <td>Status : </td>#}
-    {#                <td>Status</td>#}
-    {#            </tr>#}
-    {#            <tr>#}
-    {#                <td>RAW</td>#}
-    {#                <td>{{ status }}</td>#}
-    {#            </tr>#}
+
                 <tr>
                     <td>CPU Temp:</td>
                     <td>{{ status.cpu_temp }} C</td>
@@ -62,7 +55,43 @@
                     <td>Disk Utilization:</td>
                     <td>{{ status.disk_stats.disk_used_percent }}</td>
                 </tr>
+
+                <tr>
+                    <td>Videos on this Node:</td>
+                    <td>
+                        {% if status.movie_data %}
+                            {% for movie in status.movie_data %}
+                                <li style="margin-left: 10px">
+                                    {{ movie.name }}
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            -- No movies loaded --
+                        {% endif %}
+                    </td>
+                </tr>
+
             </table>
+            <a  href={{ url_for('main.kiosk_list') }}>
+                <button  class="btn btn-danger"  label="Back" name="Back">Back</button>
+            </a>
+
+            <a class="btn btn-info" href="http://{{ kiosk.network_address }}:5100/movies"
+               target="popup"
+               onclick="window.open('http://{{ kiosk.network_address }}:5100/movies','popup','width=900,height=600'); return false;">
+                Edit Movies
+            </a>
+
+
+            <a href="#">
+                <button class="btn btn-default pull-right"  label="Reboot" name="#">Reboot</button>
+            </a>
+            <a href="#">
+                <button class="btn btn-default pull-right"  label="Shutdown" name="#">Shutdown</button>
+            </a>
+            <a href="#">
+                <button class="btn btn-default pull-right"  label="System Update" name="#">System Update</button>
+            </a>
         {% else %}
             <h4>Connection Error, No data retrieved</h4>
         {% endif %}
@@ -71,3 +100,14 @@
 
 
 {% endblock %}
+
+<script language="javascript" type="text/javascript">
+
+    function popitup(url) {
+        newwindow=window.open(url,'name','height=200,width=150');
+        if (window.focus) {newwindow.focus()}
+        return false;
+}
+
+
+</script>

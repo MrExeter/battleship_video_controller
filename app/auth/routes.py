@@ -7,6 +7,7 @@ Description - Authorization Routes
 
 from flask import render_template, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_wtf import csrf
 
 from app.auth import authentication as at
 from app.auth.forms import RegistrationForm, LoginForm
@@ -39,6 +40,7 @@ def do_the_login():
         return redirect(url_for('main.kiosk_list'))
 
     form = LoginForm()
+    my_token = csrf.generate_csrf(secret_key='applejack', token_key='applejack')
     if form.validate_on_submit():
         user = User.query.filter_by(user_email=form.email.data).first()
         if not user or not user.check_password(form.password.data):

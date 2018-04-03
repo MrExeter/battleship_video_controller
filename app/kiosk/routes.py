@@ -8,6 +8,7 @@ Description - Main and Kiosk routes
 import requests
 from flask import render_template, flash, request, redirect, url_for, session, jsonify, json
 from flask_login import login_required
+from requests.auth import HTTPBasicAuth
 import ast
 
 from app import db
@@ -106,3 +107,22 @@ def get_kiosk_status(kiosk_id):
 
     return data
 
+
+@main.route('/kiosk/tester', methods=['GET'])
+@login_required
+def test_remote_login():
+    url = "http://10.0.1.13:5100/login"
+
+    payload = "{\n\t\"email\": \"napoleon@dynamite.com\",\n\t\"password\": \"applejack\"\n}"
+    headers = {
+        'Content-Type': "application/json",
+        'Cache-Control': "no-cache",
+        'Postman-Token': "40553c1f-4ab5-48c9-906e-165b800bf9d8"
+    }
+
+    response = requests.request("POST", url, data=payload, headers=headers)
+
+    the_cookie = response.cookies._cookies.values()
+    endpoint = url + '/movie_list.html'
+
+    return render_template(response)
