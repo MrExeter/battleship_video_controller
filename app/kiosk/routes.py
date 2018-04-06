@@ -15,6 +15,7 @@ from app import db
 from app.kiosk import main
 from app.kiosk.forms import CreateKioskForm, EditKioskForm
 from app.kiosk.models import Kiosk
+from app.utils.utils import Uecker
 
 
 @main.route('/')
@@ -93,12 +94,10 @@ def create_kiosk():
 @main.route('/kiosk/status/<kiosk_id>', methods=['GET', 'POST'])
 # @login_required
 def get_kiosk_status(kiosk_id):
-
     kiosk = Kiosk.query.get(kiosk_id)
-    network_address = kiosk.network_address
-    url = "http://" + network_address + ":5100/system_stats"
+    url = kiosk.node_url + 'system_stats'
     try:
-        r = requests.get(url, timeout=3)
+        r = requests.get(url, timeout=0.5)
         json_content = r.json.im_self.content
         data = json_content
     except:
@@ -107,6 +106,54 @@ def get_kiosk_status(kiosk_id):
 
     return data
 
+
+@main.route('/video/loop/', methods=['GET'])
+@login_required
+# def loop_video():
+    # # Uses SSH to send play command
+    # # Package contains kiosk id, movie name
+    # kiosk_id = request.args.get('kiosk_id')
+    # filename = request.args.get('filename')
+    # kiosk = Kiosk.query.get(kiosk_id)
+    #
+    # username = 'pi'
+    # password = 'dingleberry'
+    #
+    # network_address = kiosk.network_address
+    # filename = filename
+    #
+    # Uecker.loop_video(network_address, username=username, password=password, filename=filename)
+    # return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id))
+def loop_video():
+    kiosk_id = request.args.get('kiosk_id')
+    movie_id = request.args.get('movie_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'loop_video'
+    payload = {"movie_id": movie_id}
+    try:
+        r = requests.get(url, params=payload)
+        message = {'message': 'Loop command sent'}
+
+    except:
+        message = {'message': 'Error sending loop command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
+@main.route('/video/stop_loop/', methods=['GET'])
+@login_required
+def stop_loop_video():
+    kiosk_id = request.args.get('kiosk_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'stop_loop_video'
+    try:
+        r = requests.get(url)
+        message = {'message': 'Stop loop command sent'}
+
+    except:
+        message = {'message': 'Error sending stop loop command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
 
 @main.route('/kiosk/tester', methods=['GET'])
 @login_required

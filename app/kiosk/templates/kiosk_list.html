@@ -1,7 +1,9 @@
 {% extends 'layout.html' %}
 
-{% block content %}
 
+{% block content %}
+{#    <meta http-equiv="refresh" content="15; URL=http://127.0.0.1:5000/kiosks">#}
+    <meta http-equiv="refresh" content="15">
     <div class="container">
 
         <h4>Video Kiosks</h4>
@@ -22,9 +24,15 @@
                         <td>{{ kiosk.id }}</td>
                         <td>{{ kiosk.network_address }}</td>
                         <td>{{ kiosk.location }}</td>
-                        <td>Status</td>
+
+                        {% if kiosk.status() %}
+                            <td style="text-align: center; color: whitesmoke" bgcolor="green">OK</td>
+                        {% else %}
+                            <td style="text-align: center; color: whitesmoke" bgcolor="red">ERROR</td>
+                        {% endif %}
+
                         <td>
-                            <a href="{{ url_for('main.kiosk_detail', kiosk_id=kiosk.id)}}" class="btn btn-success">
+                            <a href="{{ url_for('main.kiosk_detail', kiosk_id=kiosk.id)}}" class="btn btn-primary">
                                 View
                             </a>
 

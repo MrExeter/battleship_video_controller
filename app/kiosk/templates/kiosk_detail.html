@@ -58,18 +58,32 @@
 
                 <tr>
                     <td>Videos on this Node:</td>
-                    <td>
-                        {% if status.movie_data %}
-                            {% for movie in status.movie_data %}
-                                <li style="margin-left: 10px">
-                                    {{ movie.name }}
-                                </li>
-                            {% endfor %}
-                        {% else %}
-                            -- No movies loaded --
-                        {% endif %}
-                    </td>
+                    <td></td>
                 </tr>
+
+                {% if status.movie_data %}
+                    {% for movie in status.movie_data %}
+                        <tr>
+                            <td></td>
+                            <td>
+                                {{ movie.name }}
+
+                                <a href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
+                                    <button  class="btn btn-success"  label="Loop Video" name="Loop">Loop video</button>
+                                </a>
+                                <a href="{{ url_for('main.stop_loop_video', kiosk_id=kiosk.id) }}">
+                                    <button  class="btn btn-danger"  label="Stop" name="Stop">Stop Loop</button>
+                                </a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td></td>
+                        <td>No Videos Loaded</td>
+                    </tr>
+                {% endif %}
 
             </table>
             <a  href={{ url_for('main.kiosk_list') }}>
@@ -78,7 +92,7 @@
 
             <a class="btn btn-info" href="http://{{ kiosk.network_address }}:5100/movies"
                target="popup"
-               onclick="window.open('http://{{ kiosk.network_address }}:5100/movies','popup','width=900,height=600'); return false;">
+               onclick="window.open('http://{{ kiosk.network_address }}:5100/movies','popup','width=1200,height=600'); return false;">
                 Edit Movies
             </a>
 
@@ -109,5 +123,6 @@
         return false;
 }
 
-
 </script>
+
+

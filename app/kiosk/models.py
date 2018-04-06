@@ -8,6 +8,7 @@ Description - Video Kiosk Model
 from app import db
 from sqlalchemy.dialects import postgresql
 from datetime import datetime
+import requests
 
 
 class Kiosk(db.Model):
@@ -16,10 +17,19 @@ class Kiosk(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     network_address = db.Column(db.String(36), nullable=False, index=True)
     location = db.Column(db.String(128), nullable=False)
-    status = db.Column(db.String(16))
-    cpu_stats = db.Column(db.JSON)
-    mem_stats = db.Column(db.JSON)
-    hdd_stats = db.Column(db.JSON)
+    node_url = db.Column(db.String(128), nullable=False, unique=True)
+
+    def status(self):
+        url = self.node_url + 'system_stats'
+        try:
+            r = requests.get(url, timeout=0.1)
+            json_content = r.json.im_self.content
+            data = True     # OKAY
+        except:
+            data = False    # ERROR Condition
+            return data
+
+        return data
 
     @classmethod
     def create_kiosk(cls, network_address, location):
@@ -33,6 +43,7 @@ class Kiosk(db.Model):
     def __init__(self, network_address, location):
         self.network_address = network_address
         self.location = location
+        self.node_url = 'http://' + network_address + ':5100/'
 
     def __repr__(self):
         return 'Video Controller ip={} at location : {}'.format(self.network_address, self.location)
