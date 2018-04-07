@@ -21,39 +21,39 @@
 
                 <tr>
                     <td>CPU Temp:</td>
-                    <td>{{ status.cpu_temp }} C</td>
+                    <td>{{ status.system.cpu_temp }} C</td>
                 </tr>
                 <tr>
                     <td>CPU Utilization:</td>
-                    <td>{{ status.cpu_utilization }}</td>
+                    <td>{{ status.system.cpu_utilization }}</td>
                 </tr>
                 <tr>
                     <td>Uptime : </td>
-                    <td>{{ status.uptime.days }} Days, {{ status.uptime.hours }} Hours, {{ status.uptime.minutes }} min</td>
+                    <td>{{ status.system.uptime.days }} Days, {{ status.system.uptime.hours }} Hours, {{ status.system.uptime.minutes }} min</td>
                 </tr>
                 <tr>
                     <td>Memory Total:</td>
-                    <td>{{ status.memory_stats.memory_total }}</td>
+                    <td>{{ status.system.memory_stats.memory_total }}</td>
                 </tr>
                 <tr>
                     <td>Memory Free:</td>
-                    <td>{{ status.memory_stats.memory_available }}</td>
+                    <td>{{ status.system.memory_stats.memory_available }}</td>
                 </tr>
                 <tr>
                     <td>Memory Utilization:</td>
-                    <td>{{ status.memory_stats.memory_used_percent }}</td>
+                    <td>{{ status.system.memory_stats.memory_used_percent }}</td>
                 </tr>
                 <tr>
                     <td>Disk Total:</td>
-                    <td>{{ status.disk_stats.disk_total }}</td>
+                    <td>{{ status.system.disk_stats.disk_total }}</td>
                 </tr>
                 <tr>
                     <td>Disk Free</td>
-                    <td>{{ status.disk_stats.disk_free }}</td>
+                    <td>{{ status.system.disk_stats.disk_free }}</td>
                 </tr>
                 <tr>
                     <td>Disk Utilization:</td>
-                    <td>{{ status.disk_stats.disk_used_percent }}</td>
+                    <td>{{ status.system.disk_stats.disk_used_percent }}</td>
                 </tr>
 
                 <tr>
@@ -62,12 +62,23 @@
                 </tr>
 
                 {% if status.movie_data %}
+
+
+
                     {% for movie in status.movie_data %}
                         <tr>
-                            <td></td>
-                            <td>
-                                {{ movie.name }}
+                            {% if movie.currently_playing=='True' %}
+                                <td style="text-align: center; color: whitesmoke" bgcolor="green">
+                                    {{ movie.name }}
+                                </td>
+                            {% else %}
+                                <td style="text-align: center; color: whitesmoke" bgcolor="#a9a9a9">
+                                    {{ movie.name }}
+                                </td>
 
+                            {% endif %}
+
+                            <td>
                                 <a href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
                                     <button  class="btn btn-success"  label="Loop Video" name="Loop">Loop video</button>
                                 </a>

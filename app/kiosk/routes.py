@@ -37,6 +37,7 @@ def kiosk_detail(kiosk_id):
 
     status = get_kiosk_status(kiosk_id)
     status = ast.literal_eval(status)
+
     return render_template('kiosk_detail.html', kiosk=kiosk, status=status)
 
 
@@ -154,6 +155,7 @@ def stop_loop_video():
         message = {'message': 'Error sending stop loop command'}
 
     return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
 
 @main.route('/kiosk/tester', methods=['GET'])
 @login_required
