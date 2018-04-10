@@ -5,17 +5,16 @@ Description - Main and Kiosk routes
 @time - 8:25 PM
 '''
 
-import requests
-from flask import render_template, flash, request, redirect, url_for, session, jsonify, json
-from flask_login import login_required
-from requests.auth import HTTPBasicAuth
 import ast
+
+import requests
+from flask import render_template, flash, request, redirect, url_for, session
+from flask_login import login_required
 
 from app import db
 from app.kiosk import main
 from app.kiosk.forms import CreateKioskForm, EditKioskForm
 from app.kiosk.models import Kiosk
-from app.utils.utils import Uecker
 
 
 @main.route('/')

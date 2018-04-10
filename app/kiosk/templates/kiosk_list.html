@@ -32,18 +32,30 @@
                         {% endif %}
 
                         <td>
-                            <a href="{{ url_for('main.kiosk_detail', kiosk_id=kiosk.id)}}" class="btn btn-primary">
-                                View
+{#                            <a href="{{ url_for('main.kiosk_detail', kiosk_id=kiosk.id)}}" class="btn btn-primary">#}
+{#                                View#}
+{#                            </a>#}
+                            <a href="{{ url_for('main.kiosk_detail', kiosk_id=kiosk.id)}}" class="btn btn-primary a-btn-slide-text">
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                <span><strong>View</strong></span>
                             </a>
 
-                            <a href="{{ url_for('main.edit_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-group-sm btn-info">
-                                Edit
+{#                            <a href="{{ url_for('main.edit_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-group-sm btn-info">#}
+{#                                Edit#}
+{#                            </a>#}
+                            <a href="{{ url_for('main.edit_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-success a-btn-slide-text">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                <span><strong>Edit</strong></span>
                             </a>
 
-                            <a href="{{ url_for('main.delete_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-group-sm btn-danger">
-                                Delete
-                            </a>
+{#                            <a href="{{ url_for('main.delete_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-group-sm btn-danger">#}
+{#                                Delete#}
+{#                            </a>#}
 
+                            <a href="{{ url_for('main.delete_kiosk', kiosk_id=kiosk.id) }}" class="btn btn-danger a-btn-slide-text">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                <span><strong>Delete</strong></span>
+                            </a>
 
                         </td>
                     </tr>

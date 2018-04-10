@@ -4,7 +4,6 @@ Description - Run App
 @date - 01-Mar-2018
 @time - 2:05 PM
 '''
-from flask import session
 
 from app import create_app, db
 from app.auth.models import User

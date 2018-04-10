@@ -5,10 +5,9 @@ Description - Video Kiosk Model
 @time - 2:21 PM
 '''
 
-from app import db
-from sqlalchemy.dialects import postgresql
-from datetime import datetime
 import requests
+
+from app import db
 
 
 class Kiosk(db.Model):

@@ -79,12 +79,16 @@
                             {% endif %}
 
                             <td>
-                                <a href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
-                                    <button  class="btn btn-success"  label="Loop Video" name="Loop">Loop video</button>
-                                </a>
-                                <a href="{{ url_for('main.stop_loop_video', kiosk_id=kiosk.id) }}">
-                                    <button  class="btn btn-danger"  label="Stop" name="Stop">Stop Loop</button>
-                                </a>
+                                {% if movie.currently_playing=='False' %}
+                                    <a href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
+                                        <button  class="btn btn-success"  label="Loop Video" name="Loop">Loop video</button>
+                                    </a>
+                                {% endif %}
+                                {% if movie.currently_playing=='True' %}
+                                    <a href="{{ url_for('main.stop_loop_video', kiosk_id=kiosk.id) }}">
+                                        <button  class="btn btn-danger"  label="Stop" name="Stop">Stop Loop</button>
+                                    </a>
+                                {% endif %}
 
                             </td>
                         </tr>
