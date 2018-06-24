@@ -63,8 +63,6 @@
 
                 {% if status.movie_data %}
 
-
-
                     {% for movie in status.movie_data %}
                         <tr>
                             {% if movie.currently_playing=='True' %}
@@ -99,6 +97,55 @@
                         <td>No Videos Loaded</td>
                     </tr>
                 {% endif %}
+
+                <tr>
+                    <td>Playlists on this Node:</td>
+                    <td></td>
+                </tr>
+
+                {% if status.playlist_data %}
+
+                    {% for playlist in status.playlist_data %}
+
+                        <tr>
+                            {% if playlist.currently_playing=='True' %}
+                                <td style="text-align: center; color: whitesmoke" bgcolor="green">
+                                    {{ playlist.name }}
+                                </td>
+                            {% else %}
+                                <td style="text-align: center; color: whitesmoke" bgcolor="#a9a9a9">
+                                    {{ playlist.name }}
+                                </td>
+
+                            {% endif %}
+
+                            <td>
+                                {% if playlist.currently_playing=='False' %}
+                                    <a href="{{ url_for('main.loop_playlist', kiosk_id=kiosk.id, playlist_id=playlist.id) }}">
+                                        <button  class="btn btn-success"  label="Loop Playlist" name="Loop">Loop Playlist</button>
+                                    </a>
+                                {% endif %}
+                                {% if playlist.currently_playing=='True' %}
+                                    <a href="{{ url_for('main.stop_loop_playlist', kiosk_id=kiosk.id) }}">
+                                        <button  class="btn btn-danger"  label="Stop" name="Stop">Stop Loop</button>
+                                    </a>
+                                {% endif %}
+
+                            </td>
+                        </tr>
+
+
+                    {% endfor %}
+
+                {% else %}
+                    <tr>
+                        <td></td>
+                        <td>No playlists found</td>
+                    </tr>
+
+                {% endif %}
+
+
 
             </table>
             <a  href={{ url_for('main.kiosk_list') }}>

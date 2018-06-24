@@ -132,10 +132,63 @@ def loop_video():
     payload = {"movie_id": movie_id}
     try:
         r = requests.get(url, params=payload)
-        message = {'message': 'Loop command sent'}
+        message = {'message': 'Loop video command sent'}
 
     except:
         message = {'message': 'Error sending loop command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
+@main.route('/playlist/loop/', methods=['GET'])
+@login_required
+def loop_playlist():
+    kiosk_id = request.args.get('kiosk_id')
+    playlist_id = request.args.get('playlist_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'loop_playlist'
+    payload = {"playlist_id": playlist_id}
+
+    try:
+        r = requests.get(url, params=payload)
+        message = {'message': 'Loop playlist command sent'}
+
+    except:
+        message = {'message': 'Error sending loop command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
+@main.route('/playlist/stop_loop/', methods=['GET'])
+@login_required
+def stop_loop_playlist():
+    kiosk_id = request.args.get('kiosk_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'stop_loop_playlist'
+    try:
+        r = requests.get(url)
+        message = {'message': 'Stop loop command sent'}
+
+    except:
+        message = {'message': 'Error sending stop loop command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
+@main.route('/video/play_video_once/', methods=['GET'])
+@login_required
+def play_video_once():
+    kiosk_id = request.args.get('kiosk_id')
+    movie_id = request.args.get('movie_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'play_video_once'
+    payload = {"movie_id": movie_id}
+    try:
+        r = requests.get(url, params=payload)
+        message = {'message': 'Play command sent'}
+
+    except:
+        message = {'message': 'Error sending play command'}
 
     return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
 
