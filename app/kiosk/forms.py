@@ -7,11 +7,14 @@ Description - Video Kiosk Forms
 
 from flask import session
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+# from flask_wtf.html5 import DateField, TimeInput
+from wtforms import StringField, SubmitField, TextAreaField, BooleanField
+from wtforms_components import TimeField, DateTimeField
 from wtforms.validators import DataRequired, ValidationError
+from wtforms.fields.html5 import DateField
 import re
 
-from app.kiosk.models import Kiosk
+from app.kiosk.models import Kiosk, Scheduler
 
 
 def edit_network_address_exists(form, field):
@@ -48,6 +51,29 @@ def network_address_valid(form, field):
         raise ValidationError('Invalid IP address format')
 
 
+def schedule_name_exists(form, field):
+    scheduler = Scheduler.query.filter_by(name=field.data).first()
+
+    if scheduler:
+        raise ValidationError('A scheduler by that name already exists')
+
+
+def edit_schedule_name_exists(args, field):
+    temp_name = session["current_scheduler_name"]   # Retrieve session variable for kiosk ip address
+    scheduler = Scheduler.query.filter_by(name=field.data).first()
+
+    if not scheduler:
+        return True
+
+    name = scheduler.name
+    if name == temp_name:
+        session["current_scheduler_name"] = ''
+        return True
+
+    if scheduler:
+        raise ValidationError('A scheduler by that name already exists')
+
+
 class CreateKioskForm(FlaskForm):
     network_address = StringField('Network Address', validators=[DataRequired(),
                                                                  network_address_exists,
@@ -66,3 +92,32 @@ class EditKioskForm(FlaskForm):
 
     def address_unchanged(self, address):
         pass
+
+
+class CreateSchedulerForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(),
+                                           schedule_name_exists])
+    description = TextAreaField('Description')
+    start_date = DateField('Start Date')
+    start_time = TimeField('Start time')
+    end_date = DateField('End Date')
+    end_time = TimeField('End time')
+    default = BooleanField('Default')
+    repeat = BooleanField('Repeat')
+
+    submit = SubmitField('Create Schedule')
+
+
+class EditSchedulerForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(),
+                                           edit_schedule_name_exists])
+    description = TextAreaField('Description')
+    start_date = DateField('Start Date')
+    start_time = TimeField('Start time')
+    end_date = DateField('End Date')
+    end_time = TimeField('End time')
+    default = BooleanField('Default')
+    repeat = BooleanField('Repeat')
+
+    submit = SubmitField('Update Schedule')
+

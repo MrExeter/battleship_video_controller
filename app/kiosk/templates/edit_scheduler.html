@@ -1,20 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block title %}Sign In{% endblock %}
-
 {% block content %}
 
     <div class="container form">
-        <h4>Login Here</h4>
+    <h4 style="margin-left: 45px">Edit Scheduler</h4>
         <hr>
         <br>
         {{ form.hidden_tag() }}
-{#        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>#}
-
-
         {{ wtf.quick_form(form) }}
-    </div>
 
-{#    {{ csrf_token() }}#}
+    </div>
 
 {% endblock %}

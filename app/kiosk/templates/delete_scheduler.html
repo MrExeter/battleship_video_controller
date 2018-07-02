@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h4 style="margin-left: 45px">Delete this schedule?</h4>
+        <hr>
+            <p style="margin-left: 45px">
+                Schedule Name : {{ scheduler.name }}<br>
+                Description : {{ scheduler.description }}<br>
+            </p>
+        <br>
+
+        <form action="{{ url_for('main.delete_scheduler', scheduler_id=scheduler.id) }}" method="POST" style="margin-left: 45px">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+
+    </div>
+
+{% endblock %}

@@ -46,3 +46,51 @@ class Kiosk(db.Model):
 
     def __repr__(self):
         return 'Video Controller ip={} at location : {}'.format(self.network_address, self.location)
+
+
+class Scheduler(db.Model):
+    __tablename__ = 'scheduler'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    description = db.Column(db.String(512))
+    start_date = db.Column(db.Date)
+    start_time = db.Column(db.Time)
+    end_date = db.Column(db.Date)
+    end_time = db.Column(db.Time)
+    default = db.Column(db.Boolean, default=False)
+    repeat = db.Column(db.Boolean, default=False)
+
+    def __init__(self, name, description, start_date, start_time, end_date, end_time, default, repeat):
+        self.name = name
+        self.description = description
+        self.start_date = start_date
+        self.start_time = start_time
+        self.end_date = end_date
+        self.end_time = end_time
+        self.default = default
+        self.repeat = repeat
+
+    @classmethod
+    def create_scheduler(cls, name, description, start_date, start_time, end_date, end_time, default, repeat):
+        scheduler = cls(name=name,
+                        description=description,
+                        start_date=start_date,
+                        start_time=start_time,
+                        end_date=end_date,
+                        end_time=end_time,
+                        default=default,
+                        repeat=repeat)
+
+        db.session.add(scheduler)
+        db.session.commit()
+        return scheduler
+
+    @classmethod
+    def delete_scheduler(cls, scheduler):
+        db.session.delete(scheduler)
+        db.session.commit()
+
+
+
+

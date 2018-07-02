@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+
+        <div class="container">
+
+            <h4>Video Schedulers</h4>
+            <hr>
+            <br>
+
+            {% if schedulers %}
+
+                <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Start</th>
+                    <th>Stop</th>
+                </tr>
+
+                {% for scheduler in schedulers %}
+                    <tr>
+                        <td>{{ scheduler.id }}</td>
+                        <td>{{ scheduler.name }}</td>
+                        <td>{{ scheduler.description }}</td>
+
+                        <td>
+                            <a href="{{ url_for('main.scheduler_detail', scheduler_id=scheduler.id)}}" class="btn btn-primary a-btn-slide-text">
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                <span><strong>View</strong></span>
+                            </a>
+
+                            <a href="{{ url_for('main.edit_scheduler', scheduler_id=scheduler.id) }}" class="btn btn-success a-btn-slide-text">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                <span><strong>Edit</strong></span>
+                            </a>
+
+                            <a href="{{ url_for('main.delete_scheduler', scheduler_id=scheduler.id) }}" class="btn btn-danger a-btn-slide-text">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                <span><strong>Delete</strong></span>
+                            </a>
+
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+                <h5>No Schedulers Found</h5>
+
+            {% endif %}
+
+        </div>
+
+{% endblock %}

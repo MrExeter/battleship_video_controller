@@ -11,18 +11,18 @@ db = SQLAlchemy()
 bootstrap = Bootstrap()
 login_manager = LoginManager()
 login_manager.login_view = 'authentication.do_the_login'
-login_manager.session_protection = 'strong'
+login_manager.session_protection = 'basic'
 bcrypt = Bcrypt()
-csrf = CSRFProtect()
 
 
 def create_app(config_type):
     app = Flask(__name__)
     configuration = os.path.join(os.getcwd(), 'config', config_type + '.py')
 
-    csrf.init_app(app)
-
     app.config.from_pyfile(configuration)
+
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     db.init_app(app)  # bind database to flask app
     bootstrap.init_app(app)  # Initialize Bootstrap

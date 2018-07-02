@@ -4,18 +4,19 @@
 
     <div class="container">
 
-        <h4>Video Kiosk {{ kiosk.id }} @ {{ kiosk.network_address }}</h4>
+        <h4>Video Kiosk {{ kiosk.id }} @ IP {{ kiosk.network_address }}</h4>
+        <h4>Location : {{ kiosk.location }}</h4>
         <hr>
         <br>
-
         {% if not status.Connection_Error %}
             <table class="table table-bordered table-striped table-hover">
+                <th colspan="2">System specs</th>
                 <tr>
-                    <td>Network Address : </td>
+                    <td>Network Address :</td>
                     <td>{{ kiosk.network_address }}</td>
                 </tr>
                 <tr>
-                    <td>Location : </td>
+                    <td>Location :</td>
                     <td>{{ kiosk.location }}</td>
                 </tr>
 
@@ -28,8 +29,10 @@
                     <td>{{ status.system.cpu_utilization }}</td>
                 </tr>
                 <tr>
-                    <td>Uptime : </td>
-                    <td>{{ status.system.uptime.days }} Days, {{ status.system.uptime.hours }} Hours, {{ status.system.uptime.minutes }} min</td>
+                    <td>Uptime :</td>
+                    <td>{{ status.system.uptime.days }} Days, {{ status.system.uptime.hours }}
+                        Hours, {{ status.system.uptime.minutes }} min
+                    </td>
                 </tr>
                 <tr>
                     <td>Memory Total:</td>
@@ -56,10 +59,11 @@
                     <td>{{ status.system.disk_stats.disk_used_percent }}</td>
                 </tr>
 
-                <tr>
-                    <td>Videos on this Node:</td>
-                    <td></td>
-                </tr>
+            </table>
+            <br>
+
+            <table class="table table-bordered table-striped table-hover">
+                <th colspan="2">Movies</th>
 
                 {% if status.movie_data %}
 
@@ -79,30 +83,31 @@
                             <td>
                                 {% if movie.currently_playing=='False' %}
                                     <a href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
-                                        <button  class="btn btn-success"  label="Loop Video" name="Loop">Loop video</button>
+                                        <button class="btn btn-success" label="Loop Video" name="Loop">Loop video
+                                        </button>
                                     </a>
                                 {% endif %}
                                 {% if movie.currently_playing=='True' %}
                                     <a href="{{ url_for('main.stop_loop_video', kiosk_id=kiosk.id) }}">
-                                        <button  class="btn btn-danger"  label="Stop" name="Stop">Stop Loop</button>
+                                        <button class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
                                     </a>
                                 {% endif %}
 
                             </td>
                         </tr>
                     {% endfor %}
+
                 {% else %}
                     <tr>
-                        <td></td>
-                        <td>No Videos Loaded</td>
+                        <td> -- No Videos Loaded -- </td>
                     </tr>
+
                 {% endif %}
+            </table>
 
-                <tr>
-                    <td>Playlists on this Node:</td>
-                    <td></td>
-                </tr>
-
+            <br>
+            <table class="table table-bordered table-striped table-hover">
+                <th colspan="2">Playlists</th>
                 {% if status.playlist_data %}
 
                     {% for playlist in status.playlist_data %}
@@ -122,12 +127,14 @@
                             <td>
                                 {% if playlist.currently_playing=='False' %}
                                     <a href="{{ url_for('main.loop_playlist', kiosk_id=kiosk.id, playlist_id=playlist.id) }}">
-                                        <button  class="btn btn-success"  label="Loop Playlist" name="Loop">Loop Playlist</button>
+                                        <button class="btn btn-success" label="Loop Playlist" name="Loop">Loop
+                                            Playlist
+                                        </button>
                                     </a>
                                 {% endif %}
                                 {% if playlist.currently_playing=='True' %}
                                     <a href="{{ url_for('main.stop_loop_playlist', kiosk_id=kiosk.id) }}">
-                                        <button  class="btn btn-danger"  label="Stop" name="Stop">Stop Loop</button>
+                                        <button class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
                                     </a>
                                 {% endif %}
 
@@ -138,38 +145,48 @@
                     {% endfor %}
 
                 {% else %}
+
                     <tr>
-                        <td></td>
-                        <td>No playlists found</td>
+                        <td> -- No Playlists Found -- </td>
                     </tr>
 
                 {% endif %}
 
 
-
             </table>
-            <a  href={{ url_for('main.kiosk_list') }}>
-                <button  class="btn btn-danger"  label="Back" name="Back">Back</button>
-            </a>
 
-            <a class="btn btn-info" href="http://{{ kiosk.network_address }}:5100/movies"
-               target="popup"
-               onclick="window.open('http://{{ kiosk.network_address }}:5100/movies','popup','width=1200,height=600'); return false;">
-                Edit Movies
-            </a>
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <td>
+
+                        <a href={{ url_for('main.kiosk_list') }}>
+                            <button class="btn btn-danger" label="Back" name="Back">
+                                Back
+                            </button>
+                        </a>
 
 
-            <a href="#">
-                <button class="btn btn-default pull-right"  label="Reboot" name="#">Reboot</button>
-            </a>
-            <a href="#">
-                <button class="btn btn-default pull-right"  label="Shutdown" name="#">Shutdown</button>
-            </a>
-            <a href="#">
-                <button class="btn btn-default pull-right"  label="System Update" name="#">System Update</button>
-            </a>
+                        <a class="btn btn-info" href="http://{{ kiosk.network_address }}:5100/movies"
+                           target="popup"
+                           onclick="window.open('http://{{ kiosk.network_address }}:5100/movies','popup','width=1200,height=600'); return false;">
+                            Edit Movies
+                        </a>
+
+
+                        <a href="{{ url_for('main.push_scheduler', kiosk_id=kiosk.id) }}">
+                            <button class="btn btn-success" label="Push Scheduler" name="PushScheduler">
+                                Push Scheduler
+                            </button>
+                        </a>
+
+
+                    </td>
+                </tr>
+            </table>
+
+
         {% else %}
-            <h4>Connection Error, No data retrieved</h4>
+            <p>Bad Connection</p>
         {% endif %}
 
     </div>
@@ -180,10 +197,12 @@
 <script language="javascript" type="text/javascript">
 
     function popitup(url) {
-        newwindow=window.open(url,'name','height=200,width=150');
-        if (window.focus) {newwindow.focus()}
+        newwindow = window.open(url, 'name', 'height=200,width=150');
+        if (window.focus) {
+            newwindow.focus()
+        }
         return false;
-}
+    }
 
 </script>
 

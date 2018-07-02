@@ -11,6 +11,9 @@
             <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
             <link rel="stylesheet" href="{{ url_for('static', filename = 'css/styles.css') }}">
+
+
+
         </head>
     {% endblock %}
 
@@ -30,6 +33,9 @@
                                     {% if current_user.is_authenticated %}
                                         <li><a href="{{ url_for('main.kiosk_list') }}"> Kiosks </a></li>
                                         <li><a href="{{ url_for('main.create_kiosk') }}">Create Kiosk</a></li>
+                                        <li><a href="{{ url_for('main.scheduler_list') }}"> Schedulers </a></li>
+                                        <li><a href="{{ url_for('main.create_scheduler') }}">Create Schedulers</a></li>
+
                                         <li><a href="{{ url_for('authentication.log_out_user') }}">Sign Out</a></li>
                                     {% else %}
                                         <li><a href="{{ url_for('authentication.register_user') }}"> Register </a></li>

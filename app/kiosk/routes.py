@@ -8,13 +8,13 @@ Description - Main and Kiosk routes
 import ast
 
 import requests
-from flask import render_template, flash, request, redirect, url_for, session
+from flask import render_template, flash, request, redirect, url_for, session, jsonify
 from flask_login import login_required
 
 from app import db
 from app.kiosk import main
-from app.kiosk.forms import CreateKioskForm, EditKioskForm
-from app.kiosk.models import Kiosk
+from app.kiosk.forms import CreateKioskForm, EditKioskForm, CreateSchedulerForm, EditSchedulerForm
+from app.kiosk.models import Kiosk, Scheduler
 
 
 @main.route('/')
@@ -85,7 +85,7 @@ def create_kiosk():
             network_address=form.network_address.data,
             location=form.location.data
         )
-        flash('Registration Successful')
+        flash('Kiosk Creation Successful')
         return redirect(url_for('main.kiosk_list'))
 
     return render_template('create_kiosk.html', form=form)
@@ -107,23 +107,34 @@ def get_kiosk_status(kiosk_id):
     return data
 
 
+@main.route('/kiosk/push_scheduler/<kiosk_id>/<scheduler_id>', methods=['GET', 'POST'])
+def push_scheduler(kiosk_id, scheduler_id):
+    scheduler = Scheduler.query.get(scheduler_id)
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'receive_scheduler'
+
+    scheduler_json = {
+        "name": str(scheduler.name),
+        "start_date": str(scheduler.start_date),
+        "start_time": str(scheduler.start_time),
+        "end_date": str(scheduler.end_date),
+        "end_time": str(scheduler.end_date),
+        "default": str(scheduler.default),
+        "repeat": str(scheduler.repeat)
+    }
+
+    try:
+        r = requests.post(url, json=scheduler_json, timeout=0.5)
+        message = {'message': 'Video scheduler sent'}
+
+    except:
+        message = {'message': 'Error sending video scheduler'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
 @main.route('/video/loop/', methods=['GET'])
 @login_required
-# def loop_video():
-    # # Uses SSH to send play command
-    # # Package contains kiosk id, movie name
-    # kiosk_id = request.args.get('kiosk_id')
-    # filename = request.args.get('filename')
-    # kiosk = Kiosk.query.get(kiosk_id)
-    #
-    # username = 'pi'
-    # password = 'dingleberry'
-    #
-    # network_address = kiosk.network_address
-    # filename = filename
-    #
-    # Uecker.loop_video(network_address, username=username, password=password, filename=filename)
-    # return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id))
 def loop_video():
     kiosk_id = request.args.get('kiosk_id')
     movie_id = request.args.get('movie_id')
@@ -227,3 +238,80 @@ def test_remote_login():
     endpoint = url + '/movie_list.html'
 
     return render_template(response)
+
+
+@main.route('/scheduler/scheduler_list')
+@login_required
+def scheduler_list():
+    schedulers = Scheduler.query.all()
+    return render_template('scheduler_list.html', schedulers=schedulers)
+
+
+@main.route('/scheduler/detail/<scheduler_id>')
+@login_required
+def scheduler_detail(scheduler_id):
+    scheduler = Scheduler.query.get(scheduler_id)
+
+    return render_template('scheduler_detail.html', scheduler=scheduler)
+
+
+@main.route('/scheduler/create', methods=['GET', 'POST'])
+@login_required
+def create_scheduler():
+    form = CreateSchedulerForm()
+    if form.validate_on_submit():
+
+        Scheduler.create_scheduler(
+            name=form.name.data,
+            description=form.description.data,
+            start_date=form.start_date.data,
+            start_time=form.start_time.data,
+            end_date=form.end_date.data,
+            end_time=form.end_time.data,
+            repeat=form.repeat.data
+        )
+        flash('Schedule Creation Successful')
+        return redirect(url_for('main.scheduler_list'))
+
+    return render_template('create_scheduler.html', form=form)
+
+
+@main.route('/scheduler/edit/<scheduler_id>', methods=['GET', 'POST'])
+@login_required
+def edit_scheduler(scheduler_id):
+    scheduler = Scheduler.query.get(scheduler_id)
+
+    session["current_scheduler_name"] = scheduler.name  # temp store scheduler name
+
+    form = EditSchedulerForm(obj=scheduler)
+
+    if form.validate_on_submit():
+        scheduler.name = form.name.data,
+        scheduler.description = form.description.data,
+        scheduler.start_date = form.start_date.data,
+        scheduler.start_time = form.start_time.data,
+        scheduler.end_date = form.end_date.data,
+        scheduler.end_time = form.end_time.data,
+        scheduler.repeat = form.repeat.data
+
+        db.session.add(scheduler)
+        db.session.commit()
+        flash('Scheduler updated successfully')
+        return redirect(url_for('main.scheduler_list'))
+
+    return render_template('edit_scheduler.html', form=form)
+
+
+@main.route('/scheduler/delete/<scheduler_id>', methods=['GET', 'POST'])
+@login_required
+def delete_scheduler(scheduler_id):
+    scheduler = Scheduler.query.get(scheduler_id)
+
+    if request.method == 'POST':
+        db.session.delete(scheduler)
+        db.session.commit()
+        # Scheduler.delete_scheduler(scheduler)
+        flash('Scheduler deleted successfully')
+        return redirect(url_for('main.scheduler_list'))
+
+    return render_template('delete_scheduler.html', scheduler=scheduler, scheduler_id=scheduler_id)
