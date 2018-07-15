@@ -7,7 +7,47 @@
             <h4>Video Scheduler {{ scheduler.id }} :: {{ scheduler.name }}</h4>
             <hr>
             <br>
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <th>Property</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ scheduler.name }}</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>{{ scheduler.description }}</td>
+                </tr>
 
+                <tr>
+                    <td>Default Scheduler</td>
+                    <td>{{ scheduler.default }}</td>
+                </tr>
+
+                <tr>
+                    <td>Continuous Scheduler</td>
+                    <td>{{ scheduler.continuous }}</td>
+                </tr>
+
+                <tr>
+                    <td>Start Date</td>
+                    <td>{{ scheduler.start_date }}</td>
+                </tr>
+                <tr>
+                    <td>Start Time</td>
+                    <td>{{ scheduler.start_time }}</td>
+                </tr>
+                <tr>
+                    <td>End Date</td>
+                    <td>{{ scheduler.end_date }}</td>
+                </tr>
+                <tr>
+                    <td>End Time</td>
+                    <td>{{ scheduler.end_time }}</td>
+                </tr>
+            </table>
         </div>
 
 

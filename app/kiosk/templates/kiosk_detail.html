@@ -6,6 +6,17 @@
 
         <h4>Video Kiosk {{ kiosk.id }} @ IP {{ kiosk.network_address }}</h4>
         <h4>Location : {{ kiosk.location }}</h4>
+
+            {% if status.display_status == 'On' %}
+                <h4 style="color: green">Display Status :  ON</h4>
+            {% elif status.display_status == 'Standby' %}
+                <h4 style="color: cornflowerblue">Display Status :  STANDBY</h4>
+            {% else %}
+                <h4 style="color: red">Display Status :  ERROR</h4>
+
+            {% endif %}
+
+        </h4>
         <hr>
         <br>
         {% if not status.Connection_Error %}
@@ -59,6 +70,36 @@
                     <td>{{ status.system.disk_stats.disk_used_percent }}</td>
                 </tr>
 
+            </table>
+            <br>
+
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <th colspan="2">Sleep / Wake Display</th>
+                </tr>
+
+                <tr>
+                    <td>
+                        <a href="{{ url_for('main.wake_kiosk_display', kiosk_id=kiosk.id) }}">
+                            <button class="btn btn-success" label="Loop Playlist" name="Loop">
+                                Wake Display
+                            </button>
+                        </a>
+
+                        <a href="{{ url_for('main.sleep_kiosk_display', kiosk_id=kiosk.id) }}">
+                            <button class="btn btn-danger" label="Loop Playlist" name="Loop">
+                                Sleep Display
+                            </button>
+                        </a>
+
+{#                        <a href="{{ url_for('main.kiosk_display_power_status', kiosk_id=kiosk.id) }}">#}
+{#                            <button class="btn btn-info" label="Loop Playlist" name="Loop">#}
+{#                                Get Display Status#}
+{#                            </button>#}
+{#                        </a>#}
+                    </td>
+
+                </tr>
             </table>
             <br>
 
@@ -173,11 +214,11 @@
                         </a>
 
 
-                        <a href="{{ url_for('main.push_scheduler', kiosk_id=kiosk.id) }}">
-                            <button class="btn btn-success" label="Push Scheduler" name="PushScheduler">
-                                Push Scheduler
-                            </button>
-                        </a>
+{#                        <a href="{{ url_for('main.push_scheduler', kiosk_id=kiosk.id, scheduler_id=) }}">#}
+{#                            <button class="btn btn-success" label="Push Scheduler" name="PushScheduler">#}
+{#                                Push Scheduler#}
+{#                            </button>#}
+{#                        </a>#}
 
 
                     </td>

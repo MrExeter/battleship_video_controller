@@ -120,7 +120,7 @@ def push_scheduler(kiosk_id, scheduler_id):
         "end_date": str(scheduler.end_date),
         "end_time": str(scheduler.end_date),
         "default": str(scheduler.default),
-        "repeat": str(scheduler.repeat)
+        "continuous": str(scheduler.continuous)
     }
 
     try:
@@ -220,6 +220,55 @@ def stop_loop_video():
     return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
 
 
+@main.route('/sleep_kiosk_display', methods=['GET'])
+@login_required
+def sleep_kiosk_display():
+    kiosk_id = request.args.get('kiosk_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'sleep_kiosk_display'
+    try:
+        r = requests.get(url)
+        message = {'message': 'Sleep display command sent'}
+
+    except:
+        message = {'message': 'Error sending sleep display command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
+@main.route('/wake_kiosk_display', methods=['GET'])
+@login_required
+def wake_kiosk_display():
+    kiosk_id = request.args.get('kiosk_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'wake_kiosk_display'
+    try:
+        r = requests.get(url)
+        message = {'message': 'Wake display command sent'}
+
+    except:
+        message = {'message': 'Error sending wake display command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
+@main.route('/kiosk_display_power_status', methods=['GET'])
+@login_required
+def kiosk_display_power_status():
+    kiosk_id = request.args.get('kiosk_id')
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'kiosk_display_power_status'
+    try:
+        r = requests.get(url)
+        message = {'message': 'Display power status command sent'}
+
+    except:
+        message = {'message': 'Error sending display power status command'}
+
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
+
+
+
 @main.route('/kiosk/tester', methods=['GET'])
 @login_required
 def test_remote_login():
@@ -268,7 +317,8 @@ def create_scheduler():
             start_time=form.start_time.data,
             end_date=form.end_date.data,
             end_time=form.end_time.data,
-            repeat=form.repeat.data
+            default=form.default.data,
+            continuous=form.continuous.data
         )
         flash('Schedule Creation Successful')
         return redirect(url_for('main.scheduler_list'))
@@ -286,13 +336,14 @@ def edit_scheduler(scheduler_id):
     form = EditSchedulerForm(obj=scheduler)
 
     if form.validate_on_submit():
-        scheduler.name = form.name.data,
-        scheduler.description = form.description.data,
-        scheduler.start_date = form.start_date.data,
-        scheduler.start_time = form.start_time.data,
-        scheduler.end_date = form.end_date.data,
-        scheduler.end_time = form.end_time.data,
-        scheduler.repeat = form.repeat.data
+        scheduler.name = form.name.data
+        scheduler.description = form.description.data
+        scheduler.start_date = form.start_date.data
+        scheduler.start_time = form.start_time.data
+        scheduler.end_date = form.end_date.data
+        scheduler.end_time = form.end_time.data
+        scheduler.default = form.default.data
+        scheduler.continuous = form.continuous.data
 
         db.session.add(scheduler)
         db.session.commit()

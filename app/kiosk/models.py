@@ -59,9 +59,9 @@ class Scheduler(db.Model):
     end_date = db.Column(db.Date)
     end_time = db.Column(db.Time)
     default = db.Column(db.Boolean, default=False)
-    repeat = db.Column(db.Boolean, default=False)
+    continuous = db.Column(db.Boolean, default=False)
 
-    def __init__(self, name, description, start_date, start_time, end_date, end_time, default, repeat):
+    def __init__(self, name, description, start_date, start_time, end_date, end_time, default, continuous):
         self.name = name
         self.description = description
         self.start_date = start_date
@@ -69,10 +69,10 @@ class Scheduler(db.Model):
         self.end_date = end_date
         self.end_time = end_time
         self.default = default
-        self.repeat = repeat
+        self.continuous = continuous
 
     @classmethod
-    def create_scheduler(cls, name, description, start_date, start_time, end_date, end_time, default, repeat):
+    def create_scheduler(cls, name, description, start_date, start_time, end_date, end_time, default, continuous):
         scheduler = cls(name=name,
                         description=description,
                         start_date=start_date,
@@ -80,7 +80,7 @@ class Scheduler(db.Model):
                         end_date=end_date,
                         end_time=end_time,
                         default=default,
-                        repeat=repeat)
+                        continuous=continuous)
 
         db.session.add(scheduler)
         db.session.commit()
@@ -90,7 +90,3 @@ class Scheduler(db.Model):
     def delete_scheduler(cls, scheduler):
         db.session.delete(scheduler)
         db.session.commit()
-
-
-
-

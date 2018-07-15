@@ -98,12 +98,12 @@ class CreateSchedulerForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),
                                            schedule_name_exists])
     description = TextAreaField('Description')
-    start_date = DateField('Start Date')
+    start_date = DateField('Start Date', format='%Y-%m-%d')
     start_time = TimeField('Start time')
-    end_date = DateField('End Date')
+    end_date = DateField('End Date', format='%Y-%m-%d')
     end_time = TimeField('End time')
     default = BooleanField('Default')
-    repeat = BooleanField('Repeat')
+    continuous = BooleanField('Continuous')
 
     submit = SubmitField('Create Schedule')
 
@@ -112,12 +112,12 @@ class EditSchedulerForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),
                                            edit_schedule_name_exists])
     description = TextAreaField('Description')
-    start_date = DateField('Start Date')
+    start_date = DateField('Start Date', format='%Y-%m-%d')
     start_time = TimeField('Start time')
-    end_date = DateField('End Date')
+    end_date = DateField('End Date', format='%Y-%m-%d')
     end_time = TimeField('End time')
     default = BooleanField('Default')
-    repeat = BooleanField('Repeat')
+    continuous = BooleanField('Continuous')
 
     submit = SubmitField('Update Schedule')
 
