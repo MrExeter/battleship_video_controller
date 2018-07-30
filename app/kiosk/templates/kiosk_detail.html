@@ -16,7 +16,7 @@
 
             {% endif %}
 
-        </h4>
+
         <hr>
         <br>
         {% if not status.Connection_Error %}
@@ -122,18 +122,33 @@
                             {% endif %}
 
                             <td>
-                                {% if movie.currently_playing=='False' %}
-                                    <a href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
-                                        <button class="btn btn-success" label="Loop Video" name="Loop">Loop video
-                                        </button>
-                                    </a>
-                                {% endif %}
-                                {% if movie.currently_playing=='True' %}
-                                    <a href="{{ url_for('main.stop_loop_video', kiosk_id=kiosk.id) }}">
-                                        <button class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
-                                    </a>
-                                {% endif %}
+                                {% if status.display_status == 'On' %}
+                                    {% if movie.currently_playing=='False' %}
+                                        <a href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
+                                            <button class="btn btn-success" label="Loop Video" name="Loop">Loop video
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    {% if movie.currently_playing=='True' %}
+                                        <a href="{{ url_for('main.stop_loop_video', kiosk_id=kiosk.id) }}">
+                                            <button class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
+                                        </a>
+                                    {% endif %}
 
+                                {% else %}
+                                    {% if movie.currently_playing=='False' %}
+                                        <a class="isDisabled" href="{{ url_for('main.loop_video', kiosk_id=kiosk.id, movie_id=movie.id) }}">
+                                            <button disabled class="btn btn-success" label="Loop Video" name="Loop">Loop video
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    {% if movie.currently_playing=='True' %}
+                                        <a class="isDisabled" href="{{ url_for('main.stop_loop_video', kiosk_id=kiosk.id) }}">
+                                            <button disabled class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
+                                        </a>
+                                    {% endif %}
+
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -166,17 +181,35 @@
                             {% endif %}
 
                             <td>
-                                {% if playlist.currently_playing=='False' %}
-                                    <a href="{{ url_for('main.loop_playlist', kiosk_id=kiosk.id, playlist_id=playlist.id) }}">
-                                        <button class="btn btn-success" label="Loop Playlist" name="Loop">Loop
-                                            Playlist
-                                        </button>
-                                    </a>
-                                {% endif %}
-                                {% if playlist.currently_playing=='True' %}
-                                    <a href="{{ url_for('main.stop_loop_playlist', kiosk_id=kiosk.id) }}">
-                                        <button class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
-                                    </a>
+                                {% if status.display_status == 'On' %}
+                                    {% if playlist.currently_playing=='False' %}
+                                        <a href="{{ url_for('main.loop_playlist', kiosk_id=kiosk.id, playlist_id=playlist.id) }}">
+                                            <button class="btn btn-success" label="Loop Playlist" name="Loop">Loop
+                                                Playlist
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    {% if playlist.currently_playing=='True' %}
+                                        <a href="{{ url_for('main.stop_loop_playlist', kiosk_id=kiosk.id) }}">
+                                            <button class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
+                                        </a>
+                                    {% endif %}
+
+                                {% else %}
+
+                                    {% if playlist.currently_playing=='False' %}
+                                        <a class="isDisabled" href="{{ url_for('main.loop_playlist', kiosk_id=kiosk.id, playlist_id=playlist.id) }}">
+                                            <button disabled class="btn btn-success" label="Loop Playlist" name="Loop">Loop
+                                                Playlist
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    {% if playlist.currently_playing=='True' %}
+                                        <a class="isDisabled" href="{{ url_for('main.stop_loop_playlist', kiosk_id=kiosk.id) }}">
+                                            <button disabled class="btn btn-danger" label="Stop" name="Stop">Stop Loop</button>
+                                        </a>
+                                    {% endif %}
+
                                 {% endif %}
 
                             </td>

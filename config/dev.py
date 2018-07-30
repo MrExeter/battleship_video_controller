@@ -6,3 +6,6 @@ WTF_CSRF_SECRET_KEY = 'applejack'
 CSRF_SESSION_KEY = 'applejack'
 SQLALCHEMY_DATABASE_URI = 'postgresql://dbdeveloper:dbdeveloper@localhost/battleship_db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+CELERY_BROKER_URL = 'amqp://localhost//'
+CELERY_BACKEND = 'db+postgresql://dbdeveloper:dbdeveloper@localhost/celery_test_db'

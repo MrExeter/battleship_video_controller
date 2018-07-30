@@ -4,14 +4,16 @@ Description - Main and Kiosk routes
 @date - 01-Mar-2018
 @time - 8:25 PM
 '''
+from __future__ import absolute_import
 
 import ast
 
 import requests
-from flask import render_template, flash, request, redirect, url_for, session, jsonify
+from flask import current_app
+from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 
-from app import db
+from app import db, celery
 from app.kiosk import main
 from app.kiosk.forms import CreateKioskForm, EditKioskForm, CreateSchedulerForm, EditSchedulerForm
 from app.kiosk.models import Kiosk, Scheduler
@@ -80,7 +82,6 @@ def create_kiosk():
     form = CreateKioskForm()
 
     if form.validate_on_submit():
-
         Kiosk.create_kiosk(
             network_address=form.network_address.data,
             location=form.location.data
@@ -268,7 +269,6 @@ def kiosk_display_power_status():
     return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk.id)), message
 
 
-
 @main.route('/kiosk/tester', methods=['GET'])
 @login_required
 def test_remote_login():
@@ -309,7 +309,6 @@ def scheduler_detail(scheduler_id):
 def create_scheduler():
     form = CreateSchedulerForm()
     if form.validate_on_submit():
-
         Scheduler.create_scheduler(
             name=form.name.data,
             description=form.description.data,
@@ -361,8 +360,61 @@ def delete_scheduler(scheduler_id):
     if request.method == 'POST':
         db.session.delete(scheduler)
         db.session.commit()
-        # Scheduler.delete_scheduler(scheduler)
         flash('Scheduler deleted successfully')
         return redirect(url_for('main.scheduler_list'))
 
     return render_template('delete_scheduler.html', scheduler=scheduler, scheduler_id=scheduler_id)
+
+#########################################################################################################
+#########################################################################################################
+#   -- DAVID
+#   Here is the Celery related routes and functions
+#
+#   The 'delay' is added so that the function is called and added as an asynchronous task in Celery, it will be
+#   added to the task queue for execution
+#
+#   for executing the task after a 'countdown' or at specific time in the future, you would use
+#   'apply_async'  -- this is all in the celery docs
+#
+#   NOTE: Only the wake function is
+#
+@main.route('/kiosk/wakeup/<kiosk_id>', methods=['GET', 'POST'])
+def wakeup_kiosk(kiosk_id):
+    # The 'delay' is added as part of a Celery task
+    with current_app.app_context():
+        wake_kiosk.delay(kiosk_id)
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk_id))
+
+
+@main.route('/kiosk/standby/<kiosk_id>', methods=['GET', 'POST'])
+def standby_kiosk(kiosk_id):
+    with current_app.app_context():
+        sleep_kiosk.delay(kiosk_id)
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk_id))
+
+
+@celery.task(name='routes.wake_kiosk')
+def wake_kiosk(kiosk_id):
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'wake_kiosk_display'
+
+    try:
+        r = requests.get(url)
+        message = {'message': 'Wake kiosk display command sent'}
+
+    except:
+        message = {'message': 'Error sending wake kiosk display command'}
+
+
+@celery.task(name='routes.sleep_kiosk')
+def sleep_kiosk(kiosk_id):
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'standby_kiosk_display'
+
+    try:
+        r = requests.get(url)
+        message = {'message': 'Standby kiosk display command sent'}
+
+    except:
+        message = {'message': 'Error sending standby kiosk display command'}
+
