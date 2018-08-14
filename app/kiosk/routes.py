@@ -11,11 +11,12 @@ from datetime import timedelta, datetime
 
 import pytz
 import requests
+from celery.task import task
 from flask import current_app
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 
-from app import db, celery
+from app import db   #, celery
 from app.kiosk import main
 from app.kiosk.forms import CreateKioskForm, EditKioskForm, CreateSchedulerForm, EditSchedulerForm
 from app.kiosk.models import Kiosk, Scheduler
@@ -435,7 +436,7 @@ def standby_kiosk(kiosk_id):
 
 
 # @celery.task(name='app.kiosk.routes.wake_kiosk')
-@celery.task()
+@task()
 def wake_kiosk(url):
     # kiosk = Kiosk.query.get(kiosk_id)
     # url = kiosk.node_url + 'wake_kiosk_display'
@@ -449,7 +450,7 @@ def wake_kiosk(url):
 
 
 # @celery.task(name='app.kiosk.routes.sleep_kiosk')
-@celery.task()
+@task()
 def sleep_kiosk(url):
     # kiosk = Kiosk.query.get(kiosk_id)
     # url = kiosk.node_url + 'standby_kiosk_display'

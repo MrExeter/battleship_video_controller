@@ -1,6 +1,6 @@
 import os
 
-# from celery import Celery
+from celery import Celery
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
@@ -10,8 +10,8 @@ from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
 
 # from config.dev import CELERY_BROKER_URL
-# import config.celeryconfig as celeryconfig
-from config.celeryconfig import celery
+import config.celeryconfig as celeryconfig
+# from config.celeryconfig import celery
 # from config.celeryconfig import CELERY_BROKER_URL
 
 db = SQLAlchemy()
@@ -47,13 +47,26 @@ def create_app(config_type):
     from app.auth import authentication  # import authentication
     app.register_blueprint(authentication)  # register authentication
 
-    # Configure Celery
-    # follow pattern   result_backend = 'db+scheme://user:password@host:port/dbname'
-    # app.config['CELERY_BROKER_URL'] = 'amqp://localhost//'
-    # app.config['CELERY_BACKEND'] = 'db+postgresql://dbdeveloper:dbdeveloper@localhost/battleship_db'
+    # celery = Celery(__name__, broker=CELERY_BROKER_URL, include=['app.kiosk.routes'])
 
-    # celery.conf.update(app.config)
-    # celery.config_from_object(celeryconfig)
-    # TaskBase = celery.Task
+    def make_celery(app):
+        # create context tasks in celery
+        celery = Celery(__name__, broker=celeryconfig.CELERY_BROKER_URL, include=['app.kiosk.routes'])
+        celery.conf.update(app.config)
+        celery.config_from_object(celeryconfig)
+        TaskBase = celery.Task
+
+        class ContextTask(TaskBase):
+            abstract = True
+
+            def __call__(self, *args, **kwargs):
+                with app.app_context():
+                    return TaskBase.__call__(self, *args, **kwargs)
+
+        celery.Task = ContextTask
+
+        return celery
+
+    celery = make_celery(app)
 
     return app

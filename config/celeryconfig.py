@@ -4,7 +4,12 @@ from celery import Celery
 CELERY_BROKER_URL = 'amqp://localhost//'
 CELERY_BACKEND = 'db+postgresql://dbdeveloper:dbdeveloper@localhost/celery_test_db'
 
-CELERY_IMPORTS = ('app.kiosk.routes',)
+CELERY_IMPORTS = ('app.kiosk.routes')
+
+CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
 
 CELERY_TIMEZONE = 'US/Pacific'
 TIME_ZONE = 'US/Pacific'
@@ -13,7 +18,7 @@ USE_TZ = True
 wake_url = 'http://10.0.1.13:5100/wake_kiosk_display'
 sleep_url = 'http://10.0.1.13:5100/sleep_kiosk_display'
 
-celery = Celery(__name__, broker=CELERY_BROKER_URL, include=['app.kiosk.routes'])
+# celery = Celery(__name__, broker=CELERY_BROKER_URL, include=['app.kiosk.routes'])
 
 CELERYBEAT_SCHEDULE = {
 
