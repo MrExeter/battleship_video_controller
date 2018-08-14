@@ -7,7 +7,9 @@ Description - Main and Kiosk routes
 from __future__ import absolute_import
 
 import ast
+from datetime import timedelta, datetime
 
+import pytz
 import requests
 from flask import current_app
 from flask import render_template, flash, request, redirect, url_for, session
@@ -309,13 +311,28 @@ def scheduler_detail(scheduler_id):
 def create_scheduler():
     form = CreateSchedulerForm()
     if form.validate_on_submit():
+        # start_date = form.start_date.data,
+        # start_time = form.start_time.data,
+        # end_date = form.end_date.data,
+        # end_time = form.end_time.data,
         Scheduler.create_scheduler(
             name=form.name.data,
             description=form.description.data,
-            start_date=form.start_date.data,
-            start_time=form.start_time.data,
-            end_date=form.end_date.data,
-            end_time=form.end_time.data,
+
+            start_date_time=datetime(year=form.start_date.data.year,
+                                     month=form.start_date.data.month,
+                                     day=form.start_date.data.day,
+                                     hour=form.start_time.data.hour,
+                                     minute=form.start_time.data.minute,
+                                     second=0,
+                                     microsecond=0),
+            end_date_time=datetime(year=form.end_date.data.year,
+                                   month=form.end_date.data.month,
+                                   day=form.end_date.data.day,
+                                   hour=form.end_time.data.hour,
+                                   minute=form.end_time.data.minute,
+                                   second=0,
+                                   microsecond=0),
             default=form.default.data,
             continuous=form.continuous.data
         )
@@ -334,20 +351,44 @@ def edit_scheduler(scheduler_id):
 
     form = EditSchedulerForm(obj=scheduler)
 
-    if form.validate_on_submit():
-        scheduler.name = form.name.data
-        scheduler.description = form.description.data
-        scheduler.start_date = form.start_date.data
-        scheduler.start_time = form.start_time.data
-        scheduler.end_date = form.end_date.data
-        scheduler.end_time = form.end_time.data
-        scheduler.default = form.default.data
-        scheduler.continuous = form.continuous.data
+    # form.start_date = scheduler.start_date_time.date()
 
-        db.session.add(scheduler)
-        db.session.commit()
-        flash('Scheduler updated successfully')
-        return redirect(url_for('main.scheduler_list'))
+    if request.method == 'GET':
+        form.start_date.data = scheduler.start_date_time.date()
+        form.start_time.data = scheduler.start_date_time.time()
+        form.end_date.data = scheduler.end_date_time.date()
+        form.end_time.data = scheduler.end_date_time.time()
+
+    else:
+
+        if form.validate_on_submit():
+            scheduler.name = form.name.data
+            scheduler.description = form.description.data
+            scheduler.start_date = form.start_date.data
+            scheduler.start_time = form.start_time.data
+            scheduler.end_date = form.end_date.data
+            scheduler.end_time = form.end_time.data
+            scheduler.start_date_time = datetime(year=form.start_date.data.year,
+                                                 month=form.start_date.data.month,
+                                                 day=form.start_date.data.day,
+                                                 hour=form.start_time.data.hour,
+                                                 minute=form.start_time.data.minute,
+                                                 second=0,
+                                                 microsecond=0),
+            scheduler.end_date_time = datetime(year=form.end_date.data.year,
+                                               month=form.end_date.data.month,
+                                               day=form.end_date.data.day,
+                                               hour=form.end_time.data.hour,
+                                               minute=form.end_time.data.minute,
+                                               second=0,
+                                               microsecond=0),
+            scheduler.default = form.default.data
+            scheduler.continuous = form.continuous.data
+
+            db.session.add(scheduler)
+            db.session.commit()
+            flash('Scheduler updated successfully')
+            return redirect(url_for('main.scheduler_list'))
 
     return render_template('edit_scheduler.html', form=form)
 
@@ -365,38 +406,39 @@ def delete_scheduler(scheduler_id):
 
     return render_template('delete_scheduler.html', scheduler=scheduler, scheduler_id=scheduler_id)
 
-#########################################################################################################
-#########################################################################################################
-#   -- DAVID
-#   Here is the Celery related routes and functions
-#
-#   The 'delay' is added so that the function is called and added as an asynchronous task in Celery, it will be
-#   added to the task queue for execution
-#
-#   for executing the task after a 'countdown' or at specific time in the future, you would use
-#   'apply_async'  -- this is all in the celery docs
-#
-#   NOTE: Only the wake function is
-#
-@main.route('/kiosk/wakeup/<kiosk_id>', methods=['GET', 'POST'])
+
+@main.route('/kiosk/wakeup/<kiosk_id>', methods=['GET'])
 def wakeup_kiosk(kiosk_id):
-    # The 'delay' is added as part of a Celery task
-    with current_app.app_context():
-        wake_kiosk.delay(kiosk_id)
-    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk_id))
-
-
-@main.route('/kiosk/standby/<kiosk_id>', methods=['GET', 'POST'])
-def standby_kiosk(kiosk_id):
-    with current_app.app_context():
-        sleep_kiosk.delay(kiosk_id)
-    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk_id))
-
-
-@celery.task(name='routes.wake_kiosk')
-def wake_kiosk(kiosk_id):
     kiosk = Kiosk.query.get(kiosk_id)
     url = kiosk.node_url + 'wake_kiosk_display'
+    # The 'delay' is added as part of a Celery task
+    # the_app = current_app._get_current_object()
+    the_app = current_app.app_context()
+    with the_app:
+        # wake_kiosk.delay(url)
+        now = datetime.utcnow()
+        # wake_kiosk.apply_async((url,), eta=now + timedelta(minutes=1))
+        wake_kiosk.delay(url)
+    return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk_id))
+
+
+@main.route('/kiosk/standby/<kiosk_id>', methods=['GET'])
+def standby_kiosk(kiosk_id):
+    kiosk = Kiosk.query.get(kiosk_id)
+    url = kiosk.node_url + 'sleep_kiosk_display'
+    with current_app.app_context():
+        # sleep_kiosk.delay(url)
+        now = datetime.utcnow()
+        # sleep_kiosk.apply_async((url,), eta=now + timedelta(minutes=3))
+        sleep_kiosk.delay(url)
+        return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk_id))
+
+
+# @celery.task(name='app.kiosk.routes.wake_kiosk')
+@celery.task()
+def wake_kiosk(url):
+    # kiosk = Kiosk.query.get(kiosk_id)
+    # url = kiosk.node_url + 'wake_kiosk_display'
 
     try:
         r = requests.get(url)
@@ -406,10 +448,11 @@ def wake_kiosk(kiosk_id):
         message = {'message': 'Error sending wake kiosk display command'}
 
 
-@celery.task(name='routes.sleep_kiosk')
-def sleep_kiosk(kiosk_id):
-    kiosk = Kiosk.query.get(kiosk_id)
-    url = kiosk.node_url + 'standby_kiosk_display'
+# @celery.task(name='app.kiosk.routes.sleep_kiosk')
+@celery.task()
+def sleep_kiosk(url):
+    # kiosk = Kiosk.query.get(kiosk_id)
+    # url = kiosk.node_url + 'standby_kiosk_display'
 
     try:
         r = requests.get(url)
@@ -417,4 +460,29 @@ def sleep_kiosk(kiosk_id):
 
     except:
         message = {'message': 'Error sending standby kiosk display command'}
+
+
+# from celery import Celery
+
+
+
+# @celery.on_after_configure.connect
+# def setup_periodic_task(sender, **kwargs):
+#     pass
+    # Executes every Monday morning at 7:30 a.m.
+    # sender.add_periodic_task(
+    #     crontab(hour=18, minute=27, day_of_week=[0, 1, 2, 3, 4, 5, 6]),
+    #     wake_kiosk(wake_url)
+    # )
+    #
+    # sender.add_periodic_task(
+    #     crontab(hour=18, minute=33, day_of_week=[0, 1, 2, 3, 4, 5, 6]),
+    #     sleep_kiosk(sleep_url)
+    # )
+    # sender.add_periodic_task('wake_terminals_every_morning')
+    # sender.add_periodic_task('sleep_terminals_every_morning')
+
+    # pytz
+    #
+
 

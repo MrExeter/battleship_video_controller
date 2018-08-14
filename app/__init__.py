@@ -1,6 +1,6 @@
 import os
 
-from celery import Celery
+# from celery import Celery
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
@@ -9,7 +9,10 @@ from flask_bcrypt import Bcrypt
 
 from flask_wtf.csrf import CSRFProtect
 
-from config.dev import CELERY_BROKER_URL
+# from config.dev import CELERY_BROKER_URL
+# import config.celeryconfig as celeryconfig
+from config.celeryconfig import celery
+# from config.celeryconfig import CELERY_BROKER_URL
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -18,12 +21,14 @@ login_manager.login_view = 'authentication.do_the_login'
 login_manager.session_protection = 'basic'
 bcrypt = Bcrypt()
 
-celery = Celery(__name__, broker=CELERY_BROKER_URL, include=['app.kiosk.routes'])
+# celery = Celery(__name__, broker=CELERY_BROKER_URL, include=['app.kiosk.routes'])
 
+# import config.celeryconfig as celeryconfig
 
 def create_app(config_type):
     app = Flask(__name__)
     configuration = os.path.join(os.getcwd(), 'config', config_type + '.py')
+
 
     app.config.from_pyfile(configuration)
 
@@ -47,6 +52,8 @@ def create_app(config_type):
     # app.config['CELERY_BROKER_URL'] = 'amqp://localhost//'
     # app.config['CELERY_BACKEND'] = 'db+postgresql://dbdeveloper:dbdeveloper@localhost/battleship_db'
 
-    celery.conf.update(app.config)
+    # celery.conf.update(app.config)
+    # celery.config_from_object(celeryconfig)
+    # TaskBase = celery.Task
 
     return app

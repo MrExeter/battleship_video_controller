@@ -54,31 +54,29 @@ class Scheduler(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     description = db.Column(db.String(512))
-    start_date = db.Column(db.Date)
-    start_time = db.Column(db.Time)
-    end_date = db.Column(db.Date)
-    end_time = db.Column(db.Time)
+    # start_date = db.Column(db.Date)
+    # start_time = db.Column(db.Time)
+    # end_date = db.Column(db.Date)
+    # end_time = db.Column(db.Time)
+    start_date_time = db.Column(db.DateTime)
+    end_date_time = db.Column(db.DateTime)
     default = db.Column(db.Boolean, default=False)
     continuous = db.Column(db.Boolean, default=False)
 
-    def __init__(self, name, description, start_date, start_time, end_date, end_time, default, continuous):
+    def __init__(self, name, description, start_date_time, end_date_time, default, continuous):
         self.name = name
         self.description = description
-        self.start_date = start_date
-        self.start_time = start_time
-        self.end_date = end_date
-        self.end_time = end_time
+        self.start_date_time = start_date_time
+        self.end_date_time = end_date_time
         self.default = default
         self.continuous = continuous
 
     @classmethod
-    def create_scheduler(cls, name, description, start_date, start_time, end_date, end_time, default, continuous):
+    def create_scheduler(cls, name, description, start_date_time, end_date_time, default, continuous):
         scheduler = cls(name=name,
                         description=description,
-                        start_date=start_date,
-                        start_time=start_time,
-                        end_date=end_date,
-                        end_time=end_time,
+                        start_date_time=start_date_time,
+                        end_date_time=end_date_time,
                         default=default,
                         continuous=continuous)
 

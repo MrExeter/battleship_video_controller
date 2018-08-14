@@ -1,43 +1,16 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-{#    <link rel="stylesheet" href="css/jquery.datetimepicker.min.css">#}
-{#    <script src="js/jquery.js"></script>#}
-{#    <script src="js/jquery.datetimepicker.full.js"></script>#}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.datetimepicker.min.css') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.datetimepicker.full.js') }}">jQuery.datetimepicker.setLocale('en');</script>
 
     <div class="container">
         <h4 style="margin-left: 45px">Create a new video scheduler</h4>
         <hr>
         {{ form.hidden_tag() }}
         {{ wtf.quick_form(form) }}
-{#        <input id="datetime">#}
+
 
     </div>
 
-    <script>
-        {#$("#datetime").datetimepicker({#}
-        {#    format:'d-M-Y -- H:m'#}
-        {#{);#}
-
-        $('#datetime').datetimepicker({
-
-            // dateFormat: 'dd-mm-yy',
-            dateFormat:'d-M-Y',
-            timeFormat: 'h:m',
-            value: new Date()
-        });
-
-        function getFormattedDate(date) {
-            var day = date.getDate();
-            var month = date.getMonth() + 1;
-            var year = date.getFullYear().toString().slice(2);
-            return day + '-' + month + '-' + year;
-        }
-
-    </script>
 
 {% endblock %}
 

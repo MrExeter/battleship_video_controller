@@ -24,8 +24,8 @@
                     <tr>
                         <td>{{ scheduler.id }}</td>
                         <td>{{ scheduler.name }}</td>
-                        <td>{{ scheduler.start_date }} -- {{ scheduler.start_time }}</td>
-                        <td>{{ scheduler.end_date }} -- {{ scheduler.end_time }}</td>
+                        <td>{{ scheduler.start_date_time.strftime('%d-%b-%Y %H:%M:%S %Z') }}</td>
+                        <td>{{ scheduler.end_date_time.strftime('%d-%b-%Y %H:%M:%S %Z')  }}</td>
 
                         <td>
                             <a href="{{ url_for('main.scheduler_detail', scheduler_id=scheduler.id)}}" class="btn btn-primary a-btn-slide-text">
