@@ -1,7 +1,6 @@
 import os
 
 from celery import Celery
-from celery.schedules import crontab
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
@@ -10,9 +9,6 @@ from flask_bcrypt import Bcrypt
 
 from flask_wtf.csrf import CSRFProtect
 
-# from config.dev import CELERY_BROKER_URL
-# import config.celeryconfig as celeryconfig
-# from config.celeryconfig import celery
 from config.celeryconfig import CELERY_BROKER_URL
 
 db = SQLAlchemy()
@@ -24,12 +20,10 @@ bcrypt = Bcrypt()
 
 celery = Celery(__name__, broker=CELERY_BROKER_URL, include=['app.kiosk.routes'])
 
-# from config.celeryconfig import celery
 
 def create_app(config_type):
     app = Flask(__name__)
     configuration = os.path.join(os.getcwd(), 'config', config_type + '.py')
-
 
     app.config.from_pyfile(configuration)
 
