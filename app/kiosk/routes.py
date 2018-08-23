@@ -7,10 +7,10 @@ Description - Main and Kiosk routes
 from __future__ import absolute_import
 
 import ast
-from datetime import timedelta, datetime
+from datetime import datetime
 
-import pytz
 import requests
+from celery.schedules import crontab
 from flask import current_app
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
@@ -19,6 +19,23 @@ from app import db, celery
 from app.kiosk import main
 from app.kiosk.forms import CreateKioskForm, EditKioskForm, CreateSchedulerForm, EditSchedulerForm
 from app.kiosk.models import Kiosk, Scheduler
+
+celery.conf.enable_utc = False
+celery.conf.timezone = 'US/Pacific'
+
+
+celery.conf.beat_schedule = {
+    'wake_terminals_every_morning': {
+        'task': 'app.kiosk.routes.wake_all_kiosks',
+
+        'schedule': crontab(hour=14, minute=[0, 10, 20, 30, 40, 50]),
+    },
+
+    'sleep_terminals_every_morning': {
+        'task': 'app.kiosk.routes.sleep_all_kiosks',
+        'schedule': crontab(hour=14, minute=[5, 15, 25, 35, 45, 55]),
+    },
+}
 
 
 @main.route('/')
@@ -462,9 +479,50 @@ def sleep_kiosk(url):
         message = {'message': 'Error sending standby kiosk display command'}
 
 
-# from celery import Celery
+@celery.task()
+def wake_all_kiosks():
+    # wake_all()
+    r = requests.get('http://127.0.0.1:5000/periodic/wake_all', timeout=0.25)
 
 
+@main.route('/periodic/wake_all', methods=['GET', 'POST'])
+def wake_all():
+
+    kiosks = Kiosk.query.all()
+    for kiosk in kiosks:
+        wake_url = kiosk.node_url + 'wake_kiosk_display'
+
+        try:
+            r = requests.get(wake_url, timeout=0.15)
+            message = {'message': 'Wake kiosk display sent'}
+            return "Hello Forrest"
+
+        except:
+            message = {'message': 'Error sending wake kiosk display command'}
+
+    return "Hello from wake all"
+
+
+@celery.task()
+def sleep_all_kiosks():
+    # sleep_all()
+    r = requests.get('http://127.0.0.1:5000/periodic/sleep_all', timeout=0.25)
+
+
+@main.route('/periodic/sleep_all', methods=['GET', 'POST'])
+def sleep_all():
+    kiosks = Kiosk.query.all()
+    for kiosk in kiosks:
+        sleep_url = kiosk.node_url + 'sleep_kiosk_display'
+        try:
+            r = requests.get(sleep_url, timeout=0.15)
+            message = {'message': 'Sleep kiosk display sent'}
+            return "Hello Jenny"
+
+        except:
+            message = {'message': 'Error sending sleep kiosk display command'}
+
+    return "Hello from sleep all"
 
 # @celery.on_after_configure.connect
 # def setup_periodic_task(sender, **kwargs):
