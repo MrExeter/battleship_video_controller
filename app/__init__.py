@@ -42,30 +42,14 @@ def create_app(config_type):
     from app.auth import authentication  # import authentication
     app.register_blueprint(authentication)  # register authentication
 
-    #
-    # celery.conf.beat_schedule = {
-    #     'add-every-13-seconds': {
-    #         'task': 'app.kiosk.routes.wakeup',
-    #         'schedule': 13.0,
-    #     },
-    #     'add-every-19-seconds': {
-    #         'task': 'app.kiosk.routes.sleeper',
-    #         'schedule': 19.0,
-    #     },
-    #
-    # }
-
     app.config.update(
         CELERY_BROKER_URL='redis://localhost:6379',
         CELERY_RESULT_BACKEND='redis://localhost:6379'
     )
 
-
     celery.conf.update(app.config)
     from config import celeryconfig
     celery.config_from_object(celeryconfig)
     TaskBase = celery.Task
-
-
 
     return app

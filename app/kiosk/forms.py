@@ -4,16 +4,15 @@ Description - Video Kiosk Forms
 @date - 01-Mar-2018
 @time - 2:29 PM
 '''
-import datetime
+
+import re
 
 from flask import session
-from flask_wtf import FlaskForm, validators
-# from flask_wtf.html5 import DateField, TimeInput
+from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField
-from wtforms_components import TimeField, DateTimeField
-from wtforms.validators import DataRequired, ValidationError
 from wtforms.fields.html5 import DateField
-import re
+from wtforms.validators import DataRequired, ValidationError
+from wtforms_components import TimeField
 
 from app.kiosk.models import Kiosk, Scheduler
 

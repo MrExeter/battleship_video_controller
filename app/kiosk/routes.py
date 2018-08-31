@@ -15,29 +15,39 @@ from flask import current_app
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 
-from app import db, celery, create_app
+from app import db, celery
 from app.kiosk import main
 from app.kiosk.forms import CreateKioskForm, EditKioskForm, CreateSchedulerForm, EditSchedulerForm
 from app.kiosk.models import Kiosk, Scheduler
 
+###############################################################################
+#
+# Celery configuration and Beat Schedule
+#
+# Must set UTC to FALSE and then set for local timezone, otherwise celery will stay in UTC
+# Times are all set according to a 24 hour clock i.e., military time
+# The default museum schedule (open at 10AM and close at 5PM are set in one crontab)
+# A second schedule is left in, for testing only, just comment out the default and set
+# the hours to
+#
+###############################################################################
 celery.conf.enable_utc = False
 celery.conf.timezone = 'US/Pacific'
-
-
 celery.conf.beat_schedule = {
     'wake_terminals_every_morning': {
         'task': 'app.kiosk.routes.wake_all_kiosks',
-
-        'schedule': crontab(hour=14, minute=[0, 10, 20, 30, 40, 50]),
+        'schedule': crontab(hour=9, minute=55, day_of_week='*', month_of_year='*'),
+        # 'schedule': crontab(hour=[12, 13], minute=[0, 10, 20, 30, 40, 50]),
     },
 
     'sleep_terminals_every_morning': {
         'task': 'app.kiosk.routes.sleep_all_kiosks',
-        'schedule': crontab(hour=14, minute=[5, 15, 25, 35, 45, 55]),
+        'schedule': crontab(hour=17, minute=0, day_of_week='*', month_of_year='*'),
+        # 'schedule': crontab(hour=[12, 13], minute=[5, 15, 25, 35, 45, 55]),
     },
 }
-
-
+#
+###############################################################################
 
 @main.route('/')
 def display_kiosks():
@@ -113,8 +123,12 @@ def create_kiosk():
 
 
 @main.route('/kiosk/status/<kiosk_id>', methods=['GET', 'POST'])
-# @login_required
 def get_kiosk_status(kiosk_id):
+    """
+    Sends request to an individual kiosk based on its kiosk_id
+    :param kiosk_id:
+    :return: JSON packet of status information from the kiosk
+    """
     kiosk = Kiosk.query.get(kiosk_id)
     url = kiosk.node_url + 'system_stats'
     try:
@@ -329,10 +343,7 @@ def scheduler_detail(scheduler_id):
 def create_scheduler():
     form = CreateSchedulerForm()
     if form.validate_on_submit():
-        # start_date = form.start_date.data,
-        # start_time = form.start_time.data,
-        # end_date = form.end_date.data,
-        # end_time = form.end_time.data,
+
         Scheduler.create_scheduler(
             name=form.name.data,
             description=form.description.data,
@@ -368,8 +379,6 @@ def edit_scheduler(scheduler_id):
     session["current_scheduler_name"] = scheduler.name  # temp store scheduler name
 
     form = EditSchedulerForm(obj=scheduler)
-
-    # form.start_date = scheduler.start_date_time.date()
 
     if request.method == 'GET':
         form.start_date.data = scheduler.start_date_time.date()
@@ -452,91 +461,89 @@ def standby_kiosk(kiosk_id):
         return redirect(url_for('main.kiosk_detail', kiosk_id=kiosk_id))
 
 
-import app as the_app
+# @celery.task()
+# # @periodic_task(run_every=(crontab(hour=5,
+# #                                   minute=54,
+# #                                   day_of_week='*')), name="wakeup", ignore_result=True)
+# def wakeup():
+#     debug = 99
+#
+#     from flask import Flask, current_app
+#     app = Flask(__name__)
+#
+#     print(app.name)
+#
+#     with app.app_context():
+#         print("The current app name is {}".format(current_app.name))
+#         print("Hello Forrest")
+#         # url = 'http://127.0.0.1:5000/periodic/wake_displays'
+#         url = 'localhost/periodic/wake_displays'
+#         try:
+#             r = requests.get(url, timeout=0.5)
+#             message = {'message': 'Wake kiosk display command sent'}
+#             return
+#
+#         except:
+#             message = {'message': 'Error sending wake kiosk display command'}
+#
+#     return
+#
+#
+# @main.route('/periodic/wake_displays', methods=['GET', 'POST'])
+# def wake_displays():
+#     print("Hello From wake_displays")
+#     kiosks = Kiosk.query.all()
+#
+#     for kiosk in kiosks:
+#         wake_url = kiosk.node_url + 'wake_kiosk_display'
+#         try:
+#             r = requests.get(wake_url, timeout=0.1)
+#
+#         except:
+#             message = {'message': 'Error sending wake kiosk display command'}
+#
+#     return 'Wakeup all displays Sent'
 
 
-@celery.task()
-# @periodic_task(run_every=(crontab(hour=5,
-#                                   minute=54,
-#                                   day_of_week='*')), name="wakeup", ignore_result=True)
-def wakeup():
-    debug = 99
-
-    from flask import Flask, current_app
-    app = Flask(__name__)
-
-    print(app.name)
-
-    with app.app_context():
-        print("The current app name is {}".format(current_app.name))
-        print("Hello Forrest")
-        url = 'http://127.0.0.1:5000/periodic/wake_displays'
-        try:
-            r = requests.get(url, timeout=0.5)
-            message = {'message': 'Wake kiosk display command sent'}
-            return
-
-        except:
-            message = {'message': 'Error sending wake kiosk display command'}
-
-    return
+# @celery.task()
+# # @periodic_task(run_every=(crontab(hour=6,
+# #                                   minute=0,
+# #                                   day_of_week='*')), name="sleeper", ignore_result=True)
+# def sleeper():
+#     from flask import Flask, current_app
+#     app = Flask(__name__)
+#
+#     print(app.name)
+#
+#     with app.app_context():
+#         print("The current app name is {}".format(current_app.name))
+#         print("Hello Jenny")
+#         url = 'http://127.0.0.1:5000/periodic/sleep_displays'
+#         try:
+#             r = requests.get(url, timeout=0.5)
+#             message = {'message': 'Sleep all kiosk displays command sent'}
+#             return
+#
+#         except:
+#             message = {'message': 'Error sending sleep all kiosk displays command'}
+#
+#     return
 
 
-@main.route('/periodic/wake_displays', methods=['GET', 'POST'])
-def wake_displays():
-    print("Hello From wake_displays")
-    kiosks = Kiosk.query.all()
-
-    for kiosk in kiosks:
-        wake_url = kiosk.node_url + 'wake_kiosk_display'
-        try:
-            r = requests.get(wake_url, timeout=0.1)
-
-        except:
-            message = {'message': 'Error sending wake kiosk display command'}
-
-    return 'Wakeup all displays Sent'
-
-
-@celery.task()
-# @periodic_task(run_every=(crontab(hour=6,
-#                                   minute=0,
-#                                   day_of_week='*')), name="sleeper", ignore_result=True)
-def sleeper():
-    from flask import Flask, current_app
-    app = Flask(__name__)
-
-    print(app.name)
-
-    with app.app_context():
-        print("The current app name is {}".format(current_app.name))
-        print("Hello Jenny")
-        url = 'http://127.0.0.1:5000/periodic/sleep_displays'
-        try:
-            r = requests.get(url, timeout=0.5)
-            message = {'message': 'Sleep all kiosk displays command sent'}
-            return
-
-        except:
-            message = {'message': 'Error sending sleep all kiosk displays command'}
-
-    return
-
-
-@main.route('/periodic/sleep_displays', methods=['GET', 'POST'])
-def sleep_displays():
-    print("Hello From sleep_displays")
-    kiosks = Kiosk.query.all()
-
-    for kiosk in kiosks:
-        sleep_url = kiosk.node_url + 'sleep_kiosk_display'
-        try:
-            r = requests.get(sleep_url, timeout=0.1)
-
-        except:
-            message = {'message': 'Error sending sleep kiosk display command'}
-
-    return 'Sleep all displays Sent'
+# @main.route('/periodic/sleep_displays', methods=['GET', 'POST'])
+# def sleep_displays():
+#     print("Hello From sleep_displays")
+#     kiosks = Kiosk.query.all()
+#
+#     for kiosk in kiosks:
+#         sleep_url = kiosk.node_url + 'sleep_kiosk_display'
+#         try:
+#             r = requests.get(sleep_url, timeout=0.1)
+#
+#         except:
+#             message = {'message': 'Error sending sleep kiosk display command'}
+#
+#     return 'Sleep all displays Sent'
 
 
 @celery.task(name='app.kiosk.routes.wake_kiosk')
@@ -572,8 +579,10 @@ def sleep_kiosk(url):
 
 @celery.task()
 def wake_all_kiosks():
-    # wake_all()
-    r = requests.get('http://127.0.0.1:5000/periodic/wake_all', timeout=0.25)
+    try:
+        requests.get('http://127.0.0.1:5000/periodic/wake_all', timeout=0.25)
+    except:
+        message = {'message': 'Error sending wake kiosk display command'}
 
 
 @main.route('/periodic/wake_all', methods=['GET', 'POST'])
@@ -597,7 +606,10 @@ def wake_all():
 @celery.task()
 def sleep_all_kiosks():
     # sleep_all()
-    r = requests.get('http://127.0.0.1:5000/periodic/sleep_all', timeout=0.25)
+    try:
+        requests.get('http://127.0.0.1:5000/periodic/sleep_all', timeout=0.25)
+    except:
+        message = {'message': 'Error sending sleep kiosk display command'}
 
 
 @main.route('/periodic/sleep_all', methods=['GET', 'POST'])
@@ -616,23 +628,3 @@ def sleep_all():
 
 
     return "Hello from sleep all"
-
-
-# @celery.on_after_configure.connect
-# def setup_periodic_task(sender, **kwargs):
-#     pass
-# Executes every Monday morning at 7:30 a.m.
-# sender.add_periodic_task(
-#     crontab(hour=18, minute=27, day_of_week=[0, 1, 2, 3, 4, 5, 6]),
-#     wake_kiosk(wake_url)
-# )
-#
-# sender.add_periodic_task(
-#     crontab(hour=18, minute=33, day_of_week=[0, 1, 2, 3, 4, 5, 6]),
-#     sleep_kiosk(sleep_url)
-# )
-# sender.add_periodic_task('wake_terminals_every_morning')
-# sender.add_periodic_task('sleep_terminals_every_morning')
-
-# pytz
-#
