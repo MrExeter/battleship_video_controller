@@ -42,7 +42,7 @@ class Kiosk(db.Model):
     def __init__(self, network_address, location):
         self.network_address = network_address
         self.location = location
-        self.node_url = 'http://' + network_address + ':5100/'
+        self.node_url = 'http://' + network_address + ':5000/'
 
     def __repr__(self):
         return 'Video Controller ip={} at location : {}'.format(self.network_address, self.location)

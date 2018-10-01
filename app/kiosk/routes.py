@@ -31,22 +31,23 @@ from app.kiosk.models import Kiosk, Scheduler
 # the hours to
 #
 ###############################################################################
-celery.conf.enable_utc = False
-celery.conf.timezone = 'US/Pacific'
-celery.conf.beat_schedule = {
-    'wake_terminals_every_morning': {
-        'task': 'app.kiosk.routes.wake_all_kiosks',
-        'schedule': crontab(hour=9, minute=55, day_of_week='*', month_of_year='*'),
-        # 'schedule': crontab(hour=[12, 13], minute=[0, 10, 20, 30, 40, 50]),
-    },
-
-    'sleep_terminals_every_morning': {
-        'task': 'app.kiosk.routes.sleep_all_kiosks',
-        'schedule': crontab(hour=17, minute=0, day_of_week='*', month_of_year='*'),
-        # 'schedule': crontab(hour=[12, 13], minute=[5, 15, 25, 35, 45, 55]),
-    },
-}
+# celery.conf.enable_utc = False
+# celery.conf.timezone = 'US/Pacific'
+# celery.conf.beat_schedule = {
+#     'wake_terminals_every_morning': {
+#         'task': 'app.kiosk.routes.wake_all_kiosks',
+#         'schedule': crontab(hour=9, minute=55, day_of_week='*', month_of_year='*'),
+#         # 'schedule': crontab(hour=[12, 13], minute=[0, 10, 20, 30, 40, 50]),
+#     },
 #
+#     'sleep_terminals_every_morning': {
+#         'task': 'app.kiosk.routes.sleep_all_kiosks',
+#         'schedule': crontab(hour=17, minute=0, day_of_week='*', month_of_year='*'),
+#         # 'schedule': crontab(hour=[12, 13], minute=[5, 15, 25, 35, 45, 55]),
+#     },
+# }
+#
+from app.kiosk.scheduler_config import *
 ###############################################################################
 
 @main.route('/')
@@ -306,7 +307,7 @@ def kiosk_display_power_status():
 @main.route('/kiosk/tester', methods=['GET'])
 @login_required
 def test_remote_login():
-    url = "http://10.0.1.13:5100/login"
+    url = "http://10.0.1.13:5000/login"
 
     payload = "{\n\t\"email\": \"napoleon@dynamite.com\",\n\t\"password\": \"applejack\"\n}"
     headers = {

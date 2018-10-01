@@ -11,7 +11,7 @@ from app.auth.models import User
 
 if __name__ == '__main__':
     app = create_app('dev')
-
+    print("In Run")
     app.app_context().push()
 
     with app.app_context():
