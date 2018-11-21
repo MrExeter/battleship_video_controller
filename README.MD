@@ -1,4 +1,7 @@
-**Startup Instructions**
+# Main Video Controller
+
+### RESTful API for controlling and monitoring multiple Raspberry PI video nodes
+
 
 _***Requirements & Dependencies:***_  
 
