@@ -1,5 +1,11 @@
+'''
+Description - Development run configuration
+@author - John Sentz
+@date - 20-Nov-2018
+@time - 11:09 AM
+'''
+
 DEBUG = True
-# SECRET_KEY = 'dbdeveloper'
 SERVER_NAME = '127.0.0.1:5000'
 localhost = SERVER_NAME
 SECRET_KEY = 'applejack'
