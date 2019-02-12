@@ -11,6 +11,11 @@
             <p>{{ kiosk.network_address }}</p>
             <p>{{ kiosk.location }}</p>
         {% endfor %}
+{##}
+{#    {{ grains['fqdn_ip4'][0] }}#}
+{##}
+{#    {{ grains['ip_interfaces']['eth0'][0] }}#}
+    {{ ansible_eth0.ipv4.address }}
 
     </div>
 

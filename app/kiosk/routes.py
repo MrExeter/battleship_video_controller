@@ -10,17 +10,17 @@ import ast
 from datetime import datetime
 
 import requests
-from celery.schedules import crontab
 from flask import current_app
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 
-from app import db, celery
+from app import db
 from app.kiosk import main
 from app.kiosk.forms import CreateKioskForm, EditKioskForm, CreateSchedulerForm, EditSchedulerForm
 from app.kiosk.models import Kiosk, Scheduler
-
 from app.kiosk.scheduler_config import *
+
+
 ###############################################################################
 
 
@@ -318,7 +318,6 @@ def scheduler_detail(scheduler_id):
 def create_scheduler():
     form = CreateSchedulerForm()
     if form.validate_on_submit():
-
         Scheduler.create_scheduler(
             name=form.name.data,
             description=form.description.data,
@@ -464,7 +463,6 @@ def sleep_kiosk(url):
         message = {'message': 'Error sending standby kiosk display command'}
 
 
-
 @celery.task()
 def wake_all_kiosks():
     try:
@@ -475,7 +473,6 @@ def wake_all_kiosks():
 
 @main.route('/periodic/wake_all', methods=['GET', 'POST'])
 def wake_all():
-
     kiosks = Kiosk.query.all()
     for kiosk in kiosks:
         wake_url = kiosk.node_url + 'wake_kiosk_display'

@@ -21,4 +21,7 @@ if __name__ == '__main__':
                              email='harry@potters.com',
                              password='secret')
 
-    app.run(threaded=True)
+    app.run(debug=True,
+            host='0.0.0.0',
+            port=5000,
+            threaded=True)
