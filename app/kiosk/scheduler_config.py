@@ -21,13 +21,13 @@ celery.conf.beat_schedule = {
     'wake_terminals_every_morning': {
         'task': 'app.kiosk.routes.wake_all_kiosks',
         # 'schedule': crontab(hour=9, minute=50, day_of_week='*', month_of_year='*'),
-        'schedule': crontab(hour=[21, 22], minute=[0, 10, 20, 30, 40, 50]),
+        'schedule': crontab(hour=[10, 11], minute=[0, 10, 20, 30, 40, 50]),
     },
 
 
     'sleep_terminals_every_afternoon': {
         'task': 'app.kiosk.routes.sleep_all_kiosks',
         # 'schedule': crontab(hour=17, minute=0, day_of_week='*', month_of_year='*'),
-        'schedule': crontab(hour=[21, 22], minute=[5, 15, 25, 35, 45, 55]),
+        'schedule': crontab(hour=[10, 11], minute=[5, 15, 25, 35, 45, 55]),
     },
 }
