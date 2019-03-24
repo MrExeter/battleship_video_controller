@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>app.kiosk.forms &mdash; Battleship Video Controller 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Battleship Video Controller
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../battleship_control.html">Kiosk</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Battleship Video Controller</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>app.kiosk.forms</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for app.kiosk.forms</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Description - Video Kiosk Forms</span>
+<span class="sd">@author - John Sentz</span>
+<span class="sd">@date - 01-Mar-2018</span>
+<span class="sd">@time - 2:29 PM</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">session</span>
+<span class="kn">from</span> <span class="nn">flask_wtf</span> <span class="k">import</span> <span class="n">FlaskForm</span>
+<span class="kn">from</span> <span class="nn">wtforms</span> <span class="k">import</span> <span class="n">StringField</span><span class="p">,</span> <span class="n">SubmitField</span><span class="p">,</span> <span class="n">TextAreaField</span><span class="p">,</span> <span class="n">BooleanField</span>
+<span class="kn">from</span> <span class="nn">wtforms.fields.html5</span> <span class="k">import</span> <span class="n">DateField</span>
+<span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="k">import</span> <span class="n">DataRequired</span><span class="p">,</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">wtforms_components</span> <span class="k">import</span> <span class="n">TimeField</span>
+
+<span class="kn">from</span> <span class="nn">app.kiosk.models</span> <span class="k">import</span> <span class="n">Kiosk</span><span class="p">,</span> <span class="n">Scheduler</span>
+
+
+<span class="k">def</span> <span class="nf">edit_network_address_exists</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="c1"># Check to see if IP address is already being used</span>
+    <span class="n">temp_address</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_address&quot;</span><span class="p">]</span>   <span class="c1"># Retrieve session variable for kiosk ip address</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">network_address</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">kiosk</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">network_address</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">network_address</span>
+    <span class="k">if</span> <span class="n">network_address</span> <span class="o">==</span> <span class="n">temp_address</span><span class="p">:</span>
+        <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_address&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">kiosk</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;IP address already in use&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">network_address_exists</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="c1"># Check to see if IP address is already being used</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">network_address</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">kiosk</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;IP address already in use&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">network_address_valid</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="c1"># Check to see if IP address is in valid form e.g., ###.###.###.### where each ### is 255 or less</span>
+    <span class="n">valid_ip_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="s2">&quot;^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)</span><span class="si">{3}</span><span class="s2">(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$&quot;</span><span class="p">)</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">valid_ip_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;Invalid IP address format&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">schedule_name_exists</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">scheduler</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;A scheduler by that name already exists&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">edit_schedule_name_exists</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="n">temp_name</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_scheduler_name&quot;</span><span class="p">]</span>   <span class="c1"># Retrieve session variable for kiosk ip address</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">temp_name</span><span class="p">:</span>
+        <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_scheduler_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">scheduler</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;A scheduler by that name already exists&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CreateKioskForm"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.forms.CreateKioskForm">[docs]</a><span class="k">class</span> <span class="nc">CreateKioskForm</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create new kiosk form&quot;&quot;&quot;</span>
+    <span class="n">network_address</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Network Address&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span>
+                                                                 <span class="n">network_address_exists</span><span class="p">,</span>
+                                                                 <span class="n">network_address_valid</span><span class="p">])</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s1">&#39;Create&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EditKioskForm"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.forms.EditKioskForm">[docs]</a><span class="k">class</span> <span class="nc">EditKioskForm</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Edit-update kiosk form&quot;&quot;&quot;</span>
+    <span class="n">network_address</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Network Address&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span>
+                                                                 <span class="n">edit_network_address_exists</span><span class="p">,</span>
+                                                                 <span class="n">network_address_valid</span><span class="p">])</span>
+
+    <span class="n">location</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s1">&#39;Update&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">address_unchanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CreateSchedulerForm"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.forms.CreateSchedulerForm">[docs]</a><span class="k">class</span> <span class="nc">CreateSchedulerForm</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span>
+                                           <span class="n">schedule_name_exists</span><span class="p">])</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">TextAreaField</span><span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">)</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="s1">&#39;Start Date&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">TimeField</span><span class="p">(</span><span class="s1">&#39;Start time&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">)</span>
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="s1">&#39;End Date&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">TimeField</span><span class="p">(</span><span class="s1">&#39;End time&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">)</span>
+
+    <span class="n">default</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+    <span class="n">continuous</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="s1">&#39;Continuous&#39;</span><span class="p">)</span>
+
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s1">&#39;Create Schedule&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EditSchedulerForm"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.forms.EditSchedulerForm">[docs]</a><span class="k">class</span> <span class="nc">EditSchedulerForm</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span>
+                                           <span class="n">edit_schedule_name_exists</span><span class="p">])</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">TextAreaField</span><span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">)</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="s1">&#39;Start Date&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">TimeField</span><span class="p">(</span><span class="s1">&#39;Start time&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">)</span>
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="s1">&#39;End Date&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">TimeField</span><span class="p">(</span><span class="s1">&#39;End time&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">)</span>
+    <span class="n">default</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+    <span class="n">continuous</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="s1">&#39;Continuous&#39;</span><span class="p">)</span>
+
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s1">&#39;Update Schedule&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, John Sentz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

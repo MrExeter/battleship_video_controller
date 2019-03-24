@@ -75,6 +75,7 @@ def edit_schedule_name_exists(args, field):
 
 
 class CreateKioskForm(FlaskForm):
+    """Create new kiosk form"""
     network_address = StringField('Network Address', validators=[DataRequired(),
                                                                  network_address_exists,
                                                                  network_address_valid])
@@ -83,6 +84,7 @@ class CreateKioskForm(FlaskForm):
 
 
 class EditKioskForm(FlaskForm):
+    """Edit-update kiosk form"""
     network_address = StringField('Network Address', validators=[DataRequired(),
                                                                  edit_network_address_exists,
                                                                  network_address_valid])
@@ -102,16 +104,6 @@ class CreateSchedulerForm(FlaskForm):
     start_time = TimeField('Start time', format='%H:%M')
     end_date = DateField('End Date', format='%Y-%m-%d')
     end_time = TimeField('End time', format='%H:%M')
-    # start_date_time = DateTimeField('Start', format='%Y-%m-%d::%H:%M:%S')
-    # end_date_time = DateTimeField('Enders', format='%m/%d/%y')
-    # start_date_time = DateTimeField("Start",
-    #                                 format="%Y-%m-%d :: %H:%M:%S",
-    #                                 default=datetime.datetime.now())
-    # start_date_time = DateTimeField(label='Start time',
-    #                                 format="%d-%b-%Y -- %H:%M", default=datetime.datetime.now())
-    #
-    # end_date_time = DateTimeField(label='End time',
-    #                               format="%d-%b-%Y -- %H:%M", default=datetime.datetime.now())
 
     default = BooleanField('Default')
     continuous = BooleanField('Continuous')

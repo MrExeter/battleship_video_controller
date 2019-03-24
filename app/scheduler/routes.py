@@ -36,8 +36,8 @@ def create_scheduler():
         Scheduler.create_scheduler(
             name=form.name.data,
             description=form.description.data,
-            # start_date_time=form.start_date_time.data,
-            # end_date_time=form.end_date_time.data,
+            start_date_time=form.start_date_time.data,
+            end_date_time=form.end_date_time.data,
             repeat=form.repeat.data
         )
         flash('Registration Successful')
@@ -54,7 +54,6 @@ def edit_scheduler(scheduler_id):
     form = EditSchedulerForm(obj=scheduler)
 
     if form.validate_on_submit():
-
 
         db.session.add(scheduler)
         db.session.commit()

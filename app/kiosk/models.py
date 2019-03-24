@@ -11,6 +11,8 @@ from app import db
 
 
 class Kiosk(db.Model):
+    """A kiosk represents a single Raspberry PI video display system \
+    described by an IP address, location and a node url"""
     __tablename__ = 'kiosk'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -19,6 +21,8 @@ class Kiosk(db.Model):
     node_url = db.Column(db.String(128), nullable=False, unique=True)
 
     def status(self):
+        """Method that takes the kiosks assigned ip address and \
+        retrieves the current status from the kiosk in JSON format """
         url = self.node_url + 'system_stats'
         try:
             r = requests.get(url, timeout=0.1)
@@ -32,6 +36,8 @@ class Kiosk(db.Model):
 
     @classmethod
     def create_kiosk(cls, network_address, location):
+        # """Method that given an ip address and a location (description) \
+        # creates a Kiosk object and saves it to the database"""
         kiosk = cls(network_address=network_address,
                     location=location)
 
@@ -49,15 +55,13 @@ class Kiosk(db.Model):
 
 
 class Scheduler(db.Model):
+    """A Scheduler represents an event schedule for either a single or \
+    multiple Raspberry PIs."""
     __tablename__ = 'scheduler'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     description = db.Column(db.String(512))
-    # start_date = db.Column(db.Date)
-    # start_time = db.Column(db.Time)
-    # end_date = db.Column(db.Date)
-    # end_time = db.Column(db.Time)
     start_date_time = db.Column(db.DateTime)
     end_date_time = db.Column(db.DateTime)
     default = db.Column(db.Boolean, default=False)

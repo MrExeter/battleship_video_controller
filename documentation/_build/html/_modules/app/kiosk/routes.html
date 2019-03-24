@@ -1,0 +1,724 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>app.kiosk.routes &mdash; Battleship Video Controller 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Battleship Video Controller
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../battleship_control.html">Kiosk</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Battleship Video Controller</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>app.kiosk.routes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for app.kiosk.routes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Description - Main and Kiosk routes</span>
+<span class="sd">@author - John Sentz</span>
+<span class="sd">@date - 01-Mar-2018</span>
+<span class="sd">@time - 8:25 PM*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">current_app</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">session</span>
+<span class="kn">from</span> <span class="nn">flask_login</span> <span class="k">import</span> <span class="n">login_required</span>
+
+<span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">db</span>
+<span class="kn">from</span> <span class="nn">app.kiosk</span> <span class="k">import</span> <span class="n">main</span>
+<span class="kn">from</span> <span class="nn">app.kiosk.forms</span> <span class="k">import</span> <span class="n">CreateKioskForm</span><span class="p">,</span> <span class="n">EditKioskForm</span><span class="p">,</span> <span class="n">CreateSchedulerForm</span><span class="p">,</span> <span class="n">EditSchedulerForm</span>
+<span class="kn">from</span> <span class="nn">app.kiosk.models</span> <span class="k">import</span> <span class="n">Kiosk</span><span class="p">,</span> <span class="n">Scheduler</span>
+<span class="kn">from</span> <span class="nn">app.kiosk.scheduler_config</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<span class="c1">###############################################################################</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">display_kiosks</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;authentication.do_the_login&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="kiosk_list"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.kiosk_list">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosks&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">kiosk_list</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Display list of kiosks, their ip addresses, location and status&quot;&quot;&quot;</span>
+    <span class="n">kiosks</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;kiosk_list.html&#39;</span><span class="p">,</span> <span class="n">kiosks</span><span class="o">=</span><span class="n">kiosks</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kiosk_detail"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.kiosk_detail">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/detail/&lt;kiosk_id&gt;&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">kiosk_detail</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display detailed information for a given kiosk based on its id&quot;&quot;&quot;</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">get_kiosk_status</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;kiosk_detail.html&#39;</span><span class="p">,</span> <span class="n">kiosk</span><span class="o">=</span><span class="n">kiosk</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="delete_kiosk"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.delete_kiosk">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/delete/&lt;kiosk_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">delete_kiosk</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to delete a kiosk with confirmation.</span>
+<span class="sd">    :param kiosk_id: id of kiosk to be deleted.</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">kiosk</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;kiosk deleted successfully&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_list&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;delete_kiosk.html&#39;</span><span class="p">,</span> <span class="n">kiosk</span><span class="o">=</span><span class="n">kiosk</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="edit_kiosk"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.edit_kiosk">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/edit/&lt;kiosk_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">edit_kiosk</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Edit or update an existing kiosk&quot;&quot;&quot;</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+
+    <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_address&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">network_address</span>  <span class="c1"># temp store kiosk ip address in session</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">EditKioskForm</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">kiosk</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">kiosk</span><span class="o">.</span><span class="n">network_address</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">network_address</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">kiosk</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">kiosk</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Kiosk updated successfully&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_list&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;edit_kiosk.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_kiosk"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.create_kiosk">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/create/kiosk&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">create_kiosk</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Create a new kiosk&quot;&quot;&quot;</span>
+    <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_address&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">CreateKioskForm</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">Kiosk</span><span class="o">.</span><span class="n">create_kiosk</span><span class="p">(</span>
+            <span class="n">network_address</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">network_address</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">data</span>
+        <span class="p">)</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Kiosk Creation Successful&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_list&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;create_kiosk.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_kiosk_status"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.get_kiosk_status">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/status/&lt;kiosk_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_kiosk_status</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sends request to an individual kiosk based on its kiosk_id</span>
+<span class="sd">    :param kiosk_id:</span>
+<span class="sd">    :return: JSON packet of status information from the kiosk</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;system_stats&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">json_content</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">im_self</span><span class="o">.</span><span class="n">content</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json_content</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Connection_Error&quot;</span><span class="p">:</span> <span class="s2">&quot;Cannot connect to Kiosk at address - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kiosk</span><span class="o">.</span><span class="n">network_address</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/push_scheduler/&lt;kiosk_id&gt;/&lt;scheduler_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">push_scheduler</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">,</span> <span class="n">scheduler_id</span><span class="p">):</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scheduler_id</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;receive_scheduler&#39;</span>
+
+    <span class="n">scheduler_json</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+        <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">start_date</span><span class="p">),</span>
+        <span class="s2">&quot;start_time&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">start_time</span><span class="p">),</span>
+        <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">end_date</span><span class="p">),</span>
+        <span class="s2">&quot;end_time&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">end_date</span><span class="p">),</span>
+        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">default</span><span class="p">),</span>
+        <span class="s2">&quot;continuous&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">continuous</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">scheduler_json</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Video scheduler sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending video scheduler&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/video/loop/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">loop_video</span><span class="p">():</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">movie_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;movie_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;loop_video&#39;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;movie_id&quot;</span><span class="p">:</span> <span class="n">movie_id</span><span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Loop video command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending loop command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/playlist/loop/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">loop_playlist</span><span class="p">():</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">playlist_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;playlist_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;loop_playlist&#39;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;playlist_id&quot;</span><span class="p">:</span> <span class="n">playlist_id</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Loop playlist command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending loop command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/playlist/stop_loop/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">stop_loop_playlist</span><span class="p">():</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;stop_loop_playlist&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Stop loop command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending stop loop command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/video/play_video_once/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">play_video_once</span><span class="p">():</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">movie_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;movie_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;play_video_once&#39;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;movie_id&quot;</span><span class="p">:</span> <span class="n">movie_id</span><span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Play command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending play command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/video/stop_loop/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">stop_loop_video</span><span class="p">():</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;stop_loop_video&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Stop loop command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending stop loop command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span>
+
+
+<div class="viewcode-block" id="sleep_kiosk_display"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.sleep_kiosk_display">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/sleep_kiosk_display&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">sleep_kiosk_display</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Send sleep command to a kiosk to put it&#39;s display into standby&quot;&quot;&quot;</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;sleep_kiosk_display&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Sleep display command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending sleep display command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span></div>
+
+
+<div class="viewcode-block" id="wake_kiosk_display"><a class="viewcode-back" href="../../../battleship_control.html#app.kiosk.routes.wake_kiosk_display">[docs]</a><span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/wake_kiosk_display&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">wake_kiosk_display</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Send wale command to a kiosk to wake it&#39;s display&quot;&quot;&quot;</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;wake_kiosk_display&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Wake display command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending wake display command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span></div>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk_display_power_status&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">kiosk_display_power_status</span><span class="p">():</span>
+    <span class="n">kiosk_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kiosk_id&#39;</span><span class="p">)</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;kiosk_display_power_status&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Display power status command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending display power status command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span> <span class="n">message</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/tester&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">test_remote_login</span><span class="p">():</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://10.0.1.13:5000/login&quot;</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="s2">&quot;{</span><span class="se">\n\t\&quot;</span><span class="s2">email</span><span class="se">\&quot;</span><span class="s2">: </span><span class="se">\&quot;</span><span class="s2">napoleon@dynamite.com</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\n\t\&quot;</span><span class="s2">password</span><span class="se">\&quot;</span><span class="s2">: </span><span class="se">\&quot;</span><span class="s2">applejack</span><span class="se">\&quot;\n</span><span class="s2">}&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;Cache-Control&#39;</span><span class="p">:</span> <span class="s2">&quot;no-cache&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;Postman-Token&#39;</span><span class="p">:</span> <span class="s2">&quot;40553c1f-4ab5-48c9-906e-165b800bf9d8&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+    <span class="n">the_cookie</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">_cookies</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">endpoint</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;/movie_list.html&#39;</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/scheduler/scheduler_list&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">scheduler_list</span><span class="p">():</span>
+    <span class="n">schedulers</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;scheduler_list.html&#39;</span><span class="p">,</span> <span class="n">schedulers</span><span class="o">=</span><span class="n">schedulers</span><span class="p">)</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/scheduler/detail/&lt;scheduler_id&gt;&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">scheduler_detail</span><span class="p">(</span><span class="n">scheduler_id</span><span class="p">):</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scheduler_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;scheduler_detail.html&#39;</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">)</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/scheduler/create&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">create_scheduler</span><span class="p">():</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">CreateSchedulerForm</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">Scheduler</span><span class="o">.</span><span class="n">create_scheduler</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+
+            <span class="n">start_date_time</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                     <span class="n">month</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                     <span class="n">day</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                     <span class="n">hour</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                     <span class="n">minute</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                     <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                     <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">end_date_time</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                   <span class="n">month</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                   <span class="n">day</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                   <span class="n">hour</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                   <span class="n">minute</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                   <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                   <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">continuous</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">continuous</span><span class="o">.</span><span class="n">data</span>
+        <span class="p">)</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Schedule Creation Successful&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.scheduler_list&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;create_scheduler.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/scheduler/edit/&lt;scheduler_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">edit_scheduler</span><span class="p">(</span><span class="n">scheduler_id</span><span class="p">):</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scheduler_id</span><span class="p">)</span>
+
+    <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_scheduler_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># temp store scheduler name</span>
+
+    <span class="n">form</span> <span class="o">=</span> <span class="n">EditSchedulerForm</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">scheduler</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">start_date_time</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">start_date_time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">end_date_time</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">end_date_time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">start_date_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                                 <span class="n">month</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                                 <span class="n">day</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                                 <span class="n">hour</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                                 <span class="n">minute</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                                 <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                                 <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">end_date_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                               <span class="n">month</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                               <span class="n">day</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                               <span class="n">hour</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                               <span class="n">minute</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                               <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                               <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="n">continuous</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">continuous</span><span class="o">.</span><span class="n">data</span>
+
+            <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Scheduler updated successfully&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.scheduler_list&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;edit_scheduler.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/scheduler/delete/&lt;scheduler_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">delete_scheduler</span><span class="p">(</span><span class="n">scheduler_id</span><span class="p">):</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scheduler_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Scheduler deleted successfully&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.scheduler_list&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;delete_scheduler.html&#39;</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span> <span class="n">scheduler_id</span><span class="o">=</span><span class="n">scheduler_id</span><span class="p">)</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/wakeup/&lt;kiosk_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">wakeup_kiosk</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">):</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;wake_kiosk_display&#39;</span>
+    <span class="c1"># The &#39;delay&#39; is added as part of a Celery task</span>
+    <span class="c1"># the_app = current_app._get_current_object()</span>
+    <span class="n">the_app</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">app_context</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">the_app</span><span class="p">:</span>
+        <span class="c1"># wake_kiosk.delay(url)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="c1"># wake_kiosk.apply_async((url,), eta=now + timedelta(minutes=1))</span>
+        <span class="n">wake_kiosk</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk_id</span><span class="p">))</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/kiosk/standby/&lt;kiosk_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">standby_kiosk</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">):</span>
+    <span class="n">kiosk</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kiosk_id</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;sleep_kiosk_display&#39;</span>
+    <span class="k">with</span> <span class="n">current_app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="c1"># sleep_kiosk.delay(url)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="c1"># sleep_kiosk.apply_async((url,), eta=now + timedelta(minutes=3))</span>
+        <span class="n">sleep_kiosk</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;main.kiosk_detail&#39;</span><span class="p">,</span> <span class="n">kiosk_id</span><span class="o">=</span><span class="n">kiosk_id</span><span class="p">))</span>
+
+
+<span class="nd">@celery</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;app.kiosk.routes.wake_kiosk&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">wake_kiosk</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="c1"># kiosk = Kiosk.query.get(kiosk_id)</span>
+    <span class="c1"># url = kiosk.node_url + &#39;wake_kiosk_display&#39;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Wake kiosk display command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending wake kiosk display command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span>
+
+
+<span class="nd">@celery</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;app.kiosk.routes.sleep_kiosk&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sleep_kiosk</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="c1"># kiosk = Kiosk.query.get(kiosk_id)</span>
+    <span class="c1"># url = kiosk.node_url + &#39;standby_kiosk_display&#39;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Standby kiosk display command sent&#39;</span><span class="p">}</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending standby kiosk display command&#39;</span><span class="p">}</span>
+
+
+<span class="nd">@celery</span><span class="o">.</span><span class="n">task</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">wake_all_kiosks</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://127.0.0.1:5000/periodic/wake_all&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending wake kiosk display command&#39;</span><span class="p">}</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/periodic/wake_all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">wake_all</span><span class="p">():</span>
+    <span class="n">kiosks</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">kiosk</span> <span class="ow">in</span> <span class="n">kiosks</span><span class="p">:</span>
+        <span class="n">wake_url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;wake_kiosk_display&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">wake_url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Wake kiosk display sent&#39;</span><span class="p">}</span>
+            <span class="k">return</span> <span class="s2">&quot;Hello Forrest&quot;</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending wake kiosk display command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="s2">&quot;Hello from wake all&quot;</span>
+
+
+<span class="nd">@celery</span><span class="o">.</span><span class="n">task</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">sleep_all_kiosks</span><span class="p">():</span>
+    <span class="c1"># sleep_all()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://127.0.0.1:5000/periodic/sleep_all&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending sleep kiosk display command&#39;</span><span class="p">}</span>
+
+
+<span class="nd">@main</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/periodic/sleep_all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">sleep_all</span><span class="p">():</span>
+    <span class="n">kiosks</span> <span class="o">=</span> <span class="n">Kiosk</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">kiosk</span> <span class="ow">in</span> <span class="n">kiosks</span><span class="p">:</span>
+        <span class="n">sleep_url</span> <span class="o">=</span> <span class="n">kiosk</span><span class="o">.</span><span class="n">node_url</span> <span class="o">+</span> <span class="s1">&#39;sleep_kiosk_display&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sleep_url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Sleep kiosk display sent&#39;</span><span class="p">}</span>
+            <span class="k">return</span> <span class="s2">&quot;Hello Jenny&quot;</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Error sending sleep kiosk display command&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="s2">&quot;Hello from sleep all&quot;</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, John Sentz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

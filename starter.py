@@ -15,7 +15,6 @@ from config.process_commands import *
 
 class Starter:
     REDIS_PID = None
-    RABBITMQ_PID = None
     CELERY_BEAT_PID = None
     CELERY_WORKER_PID = None
 
@@ -24,7 +23,6 @@ class Starter:
 
     @classmethod
     def clean_and_clear(cls):
-
         pass
 
     @classmethod
@@ -39,12 +37,6 @@ class Starter:
             # Running on MAC
             #
             print('You are on a MAC : {}'.format(platform))
-
-            ###################################################################
-            # Start RabbitMQ if not already running
-            #
-            subprocess.Popen(RABBITMQ_MAC_RESTART_CMD, shell=True)
-            sleep(15)
 
             ###################################################################
             # Start Redis if not already running
@@ -81,12 +73,6 @@ class Starter:
             # Running on Linux
             #
             print('You are on Linux : {}'.format(platform))
-
-            ###################################################################
-            # Start RabbitMQ if not already running
-            #
-            subprocess.Popen(RABBITMQ_LINUX_RESTART, shell=True)
-            sleep(15)
 
             ###################################################################
             # Start Redis if not already running
@@ -142,8 +128,9 @@ class Starter:
         try:
             status = subprocess.check_output(CELERY_WORKER_STATUS, shell=True)
 
-        except:
+        except Exception as exp:
             print("Start Celery workers")
+            print("Exception :", exp)
             process = subprocess.Popen(CELERY_WORKER_CMD, shell=True)
             pid = process.pid
             sleep(5)

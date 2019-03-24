@@ -32,6 +32,7 @@ def display_kiosks():
 @main.route('/kiosks')
 @login_required
 def kiosk_list():
+    """Display list of kiosks, their ip addresses, location and status"""
     kiosks = Kiosk.query.all()
     return render_template('kiosk_list.html', kiosks=kiosks)
 
@@ -39,6 +40,7 @@ def kiosk_list():
 @main.route('/kiosk/detail/<kiosk_id>')
 @login_required
 def kiosk_detail(kiosk_id):
+    """Display detailed information for a given kiosk based on its id"""
     kiosk = Kiosk.query.get(kiosk_id)
 
     status = get_kiosk_status(kiosk_id)
@@ -50,6 +52,11 @@ def kiosk_detail(kiosk_id):
 @main.route('/kiosk/delete/<kiosk_id>', methods=['GET', 'POST'])
 @login_required
 def delete_kiosk(kiosk_id):
+    """
+    Method to delete a kiosk with confirmation.
+    :param kiosk_id: id of kiosk to be deleted.
+    :return:
+    """
     kiosk = Kiosk.query.get(kiosk_id)
 
     if request.method == 'POST':
@@ -64,6 +71,7 @@ def delete_kiosk(kiosk_id):
 @main.route('/kiosk/edit/<kiosk_id>', methods=['GET', 'POST'])
 @login_required
 def edit_kiosk(kiosk_id):
+    """Edit or update an existing kiosk"""
     kiosk = Kiosk.query.get(kiosk_id)
 
     session["current_address"] = kiosk.network_address  # temp store kiosk ip address in session
@@ -83,6 +91,7 @@ def edit_kiosk(kiosk_id):
 @main.route('/create/kiosk', methods=['GET', 'POST'])
 @login_required
 def create_kiosk():
+    """Create a new kiosk"""
     session["current_address"] = ''
     form = CreateKioskForm()
 
@@ -233,6 +242,7 @@ def stop_loop_video():
 @main.route('/sleep_kiosk_display', methods=['GET'])
 @login_required
 def sleep_kiosk_display():
+    """Send sleep command to a kiosk to put it's display into standby"""
     kiosk_id = request.args.get('kiosk_id')
     kiosk = Kiosk.query.get(kiosk_id)
     url = kiosk.node_url + 'sleep_kiosk_display'
@@ -249,6 +259,7 @@ def sleep_kiosk_display():
 @main.route('/wake_kiosk_display', methods=['GET'])
 @login_required
 def wake_kiosk_display():
+    """Send wale command to a kiosk to wake it's display"""
     kiosk_id = request.args.get('kiosk_id')
     kiosk = Kiosk.query.get(kiosk_id)
     url = kiosk.node_url + 'wake_kiosk_display'

@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Kiosk &mdash; Battleship Video Controller 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Battleship Video Controller documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Battleship Video Controller
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Kiosk</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-app.kiosk.models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-app.kiosk.routes">Routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-app.kiosk.forms">Forms</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Battleship Video Controller</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Kiosk</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/battleship_control.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-app.kiosk">
+<span id="kiosk"></span><h1>Kiosk<a class="headerlink" href="#module-app.kiosk" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-app.kiosk.models">
+<span id="models"></span><h2>Models<a class="headerlink" href="#module-app.kiosk.models" title="Permalink to this headline">¶</a></h2>
+<p>Description - Video Kiosk Model
+&#64;author - John Sentz
+&#64;date - 01-Mar-2018
+&#64;time - 2:21 PM</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">method(dummy):</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="app.kiosk.models.Kiosk">
+<em class="property">class </em><code class="descclassname">app.kiosk.models.</code><code class="descname">Kiosk</code><span class="sig-paren">(</span><em>network_address</em>, <em>location</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/models.html#Kiosk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.models.Kiosk" title="Permalink to this definition">¶</a></dt>
+<dd><p>A kiosk represents a single Raspberry PI video display system     described by an IP address, location and a node url</p>
+<dl class="method">
+<dt id="app.kiosk.models.Kiosk.status">
+<code class="descname">status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/models.html#Kiosk.status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.models.Kiosk.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that takes the kiosks assigned ip address and         retrieves the current status from the kiosk in JSON format</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="app.kiosk.models.Scheduler">
+<em class="property">class </em><code class="descclassname">app.kiosk.models.</code><code class="descname">Scheduler</code><span class="sig-paren">(</span><em>name</em>, <em>description</em>, <em>start_date_time</em>, <em>end_date_time</em>, <em>default</em>, <em>continuous</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/models.html#Scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.models.Scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Scheduler represents an event schedule for either a single or     multiple Raspberry PIs.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The Scheduler class is not currently implemented, it will be added in a future release</p>
+</div>
+</div>
+<div class="section" id="module-app.kiosk.routes">
+<span id="routes"></span><h2>Routes<a class="headerlink" href="#module-app.kiosk.routes" title="Permalink to this headline">¶</a></h2>
+<p>Description - Main and Kiosk routes
+&#64;author - John Sentz
+&#64;date - 01-Mar-2018
+&#64;time - 8:25 PM*-</p>
+<dl class="function">
+<dt id="app.kiosk.routes.create_kiosk">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">create_kiosk</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#create_kiosk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.create_kiosk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new kiosk</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.kiosk.routes.delete_kiosk">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">delete_kiosk</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#delete_kiosk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.delete_kiosk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to delete a kiosk with confirmation.
+:param kiosk_id: id of kiosk to be deleted.
+:return:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.kiosk.routes.edit_kiosk">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">edit_kiosk</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#edit_kiosk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.edit_kiosk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit or update an existing kiosk</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.kiosk.routes.get_kiosk_status">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">get_kiosk_status</code><span class="sig-paren">(</span><em>kiosk_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#get_kiosk_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.get_kiosk_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends request to an individual kiosk based on its kiosk_id
+:param kiosk_id:
+:return: JSON packet of status information from the kiosk</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.kiosk.routes.kiosk_detail">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">kiosk_detail</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#kiosk_detail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.kiosk_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display detailed information for a given kiosk based on its id</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.kiosk.routes.kiosk_list">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">kiosk_list</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#kiosk_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.kiosk_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display list of kiosks, their ip addresses, location and status</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.kiosk.routes.sleep_kiosk_display">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">sleep_kiosk_display</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#sleep_kiosk_display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.sleep_kiosk_display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send sleep command to a kiosk to put it’s display into standby</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.kiosk.routes.wake_kiosk_display">
+<code class="descclassname">app.kiosk.routes.</code><code class="descname">wake_kiosk_display</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/routes.html#wake_kiosk_display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.routes.wake_kiosk_display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send wale command to a kiosk to wake it’s display</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-app.kiosk.forms">
+<span id="forms"></span><h2>Forms<a class="headerlink" href="#module-app.kiosk.forms" title="Permalink to this headline">¶</a></h2>
+<p>Description - Video Kiosk Forms
+&#64;author - John Sentz
+&#64;date - 01-Mar-2018
+&#64;time - 2:29 PM</p>
+<dl class="class">
+<dt id="app.kiosk.forms.CreateKioskForm">
+<em class="property">class </em><code class="descclassname">app.kiosk.forms.</code><code class="descname">CreateKioskForm</code><span class="sig-paren">(</span><em>formdata=&lt;object object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/forms.html#CreateKioskForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.forms.CreateKioskForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new kiosk form</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="app.kiosk.forms.CreateSchedulerForm">
+<em class="property">class </em><code class="descclassname">app.kiosk.forms.</code><code class="descname">CreateSchedulerForm</code><span class="sig-paren">(</span><em>formdata=&lt;object object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/forms.html#CreateSchedulerForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.forms.CreateSchedulerForm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="app.kiosk.forms.EditKioskForm">
+<em class="property">class </em><code class="descclassname">app.kiosk.forms.</code><code class="descname">EditKioskForm</code><span class="sig-paren">(</span><em>formdata=&lt;object object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/forms.html#EditKioskForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.forms.EditKioskForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit-update kiosk form</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="app.kiosk.forms.EditSchedulerForm">
+<em class="property">class </em><code class="descclassname">app.kiosk.forms.</code><code class="descname">EditSchedulerForm</code><span class="sig-paren">(</span><em>formdata=&lt;object object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/kiosk/forms.html#EditSchedulerForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.kiosk.forms.EditSchedulerForm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Battleship Video Controller documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, John Sentz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>
