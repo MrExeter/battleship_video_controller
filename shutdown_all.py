@@ -36,10 +36,10 @@ class APIShutdown:
         cls.shutdown_redis()
         sleep(5)
 
-        #######################################################################
-        # Shutdown RabbitMQ
-        cls.shutdown_rabbit_mq()
-        sleep(5)
+        # #######################################################################
+        # # Shutdown RabbitMQ
+        # cls.shutdown_rabbit_mq()
+        # sleep(5)
 
     @classmethod
     def shutdown_flask(cls):
@@ -95,25 +95,25 @@ class APIShutdown:
         else:
             print('Unknown OS : {}'.format(platform))
 
-    @classmethod
-    def shutdown_rabbit_mq(cls):
-        ###################################################################
-        # Determine platform e.g. Mac or Linux
-        #
-        platform = str(sys.platform)
-
-        if platform == 'darwin':
-            ###################################################################
-            # Running on MAC
-            cls.rabbitmq_shutdown_mac()
-
-        elif platform.__contains__('linux'):
-            ###################################################################
-            # Running on LINUX
-            cls.rabbitmq_shutdown_linux()
-
-        else:
-            print('Unknown OS : {}'.format(platform))
+    # @classmethod
+    # def shutdown_rabbit_mq(cls):
+    #     ###################################################################
+    #     # Determine platform e.g. Mac or Linux
+    #     #
+    #     platform = str(sys.platform)
+    #
+    #     if platform == 'darwin':
+    #         ###################################################################
+    #         # Running on MAC
+    #         cls.rabbitmq_shutdown_mac()
+    #
+    #     elif platform.__contains__('linux'):
+    #         ###################################################################
+    #         # Running on LINUX
+    #         cls.rabbitmq_shutdown_linux()
+    #
+    #     else:
+    #         print('Unknown OS : {}'.format(platform))
 
     @classmethod
     def redis_shutdown_mac(cls):
@@ -136,21 +136,21 @@ class APIShutdown:
         except:
             print("Redis not running....")
 
-    @classmethod
-    def rabbitmq_shutdown_mac(cls):
-        try:
-            status = subprocess.check_output(RABBITMQ_MAC_SHUTDOWN_CMD)
-            print("Shutting down RabbitMQ.....")
-        except:
-            print("RabbitMQ not running.....")
-
-    @classmethod
-    def rabbitmq_shutdown_linux(cls):
-        try:
-            os.system(RABBITMQ_LINUX_STOP)
-            print("Shutting down RabbitMQ....")
-        except:
-            print("RabbitMQ not running....")
+    # @classmethod
+    # def rabbitmq_shutdown_mac(cls):
+    #     try:
+    #         status = subprocess.check_output(RABBITMQ_MAC_SHUTDOWN_CMD)
+    #         print("Shutting down RabbitMQ.....")
+    #     except:
+    #         print("RabbitMQ not running.....")
+    #
+    # @classmethod
+    # def rabbitmq_shutdown_linux(cls):
+    #     try:
+    #         os.system(RABBITMQ_LINUX_STOP)
+    #         print("Shutting down RabbitMQ....")
+    #     except:
+    #         print("RabbitMQ not running....")
 
 
 APIShutdown.shutdown_all()

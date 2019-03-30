@@ -18,13 +18,13 @@ REDIS_START_LINUX = 'sudo systemctl start redis'
 REDIS_RESTART_LINUX = 'sudo systemctl restart redis'
 REDIS_STOP_LINUX = 'sudo systemctl stop redis'
 
-RABBITMQ_MAC_RESTART_CMD = 'brew services restart rabbitmq'
-RABBITMQ_MAC_SHUTDOWN_CMD = 'brew services stop rabbitmq'
-
-RABBITMQ_LINUX_STATUS = 'service rabbitmq-server status'
-RABBITMQ_LINUX_START = 'sudo service rabbitmq-server start'
-RABBITMQ_LINUX_STOP = 'sudo service rabbitmq-server stop'
-RABBITMQ_LINUX_RESTART = 'sudo service rabbitmq-server restart'
+# RABBITMQ_MAC_RESTART_CMD = 'brew services restart rabbitmq'
+# RABBITMQ_MAC_SHUTDOWN_CMD = 'brew services stop rabbitmq'
+#
+# RABBITMQ_LINUX_STATUS = 'service rabbitmq-server status'
+# RABBITMQ_LINUX_START = 'sudo service rabbitmq-server start'
+# RABBITMQ_LINUX_STOP = 'sudo service rabbitmq-server stop'
+# RABBITMQ_LINUX_RESTART = 'sudo service rabbitmq-server restart'
 
 FLASK_APP_CMD = ["python", "run.py"]
 FLASK_APP_STATUS_CMD = 'lsof -i :5000'

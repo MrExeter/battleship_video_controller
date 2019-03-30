@@ -1,5 +1,5 @@
 '''
-Description - File and utility class to start flask app, RabbitMQ, Redis, Celerybeat and Celery workers
+Description - File and utility class to start flask app, Redis, Celerybeat and Celery workers
 @author - John Sentz
 @date - 27-Sep-2018
 @time - 10:20 PM
